@@ -57,15 +57,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         mRecipeAdapter.swapCursor(data);
-        if (data == null || data.getCount() == 0) {
-            // dummy data
-            ContentValues values = new ContentValues();
-            values.put(BakingContract.COLUMN_NAME, "Nutella Pie");
-            getContentResolver().insert(BakingProvider.BakingRecipes.CONTENT_URI, values);
-
-            values.put(BakingContract.COLUMN_NAME, "Brownies");
-            getContentResolver().insert(BakingProvider.BakingRecipes.CONTENT_URI, values);
-        }
     }
 
     @Override
