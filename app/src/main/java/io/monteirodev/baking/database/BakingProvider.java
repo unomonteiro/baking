@@ -1,4 +1,4 @@
-package io.monteirodev.baking.provider;
+package io.monteirodev.baking.database;
 
 import android.net.Uri;
 
@@ -11,7 +11,7 @@ import net.simonvt.schematic.annotation.TableEndpoint;
         database = BakingDatabase.class)
 public class BakingProvider {
 
-    public static final String AUTHORITY = "io.monteirodev.baking.provider";
+    public static final String AUTHORITY = "io.monteirodev.baking.provider.BakingProvider";
 
     @TableEndpoint(table = BakingDatabase.BAKING_RECIPES)
     public static class BakingRecipes {

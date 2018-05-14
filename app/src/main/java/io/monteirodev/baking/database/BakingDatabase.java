@@ -1,4 +1,4 @@
-package io.monteirodev.baking.provider;
+package io.monteirodev.baking.database;
 
 import net.simonvt.schematic.annotation.Database;
 import net.simonvt.schematic.annotation.Table;

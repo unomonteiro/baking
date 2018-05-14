@@ -1,4 +1,4 @@
-package io.monteirodev.baking.provider;
+package io.monteirodev.baking.database;
 
 import net.simonvt.schematic.annotation.AutoIncrement;
 import net.simonvt.schematic.annotation.ConflictResolutionType;

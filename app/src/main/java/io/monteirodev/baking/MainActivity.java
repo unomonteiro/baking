@@ -11,11 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.SimpleCursorAdapter;
 
-import io.monteirodev.baking.provider.BakingContract;
-import io.monteirodev.baking.provider.BakingProvider;
+import io.monteirodev.baking.database.BakingContract;
+import io.monteirodev.baking.database.BakingProvider;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {

@@ -18,8 +18,8 @@
         </activity>
 
         <provider
-            android:name=".provider.generated.BakingProvider"
-            android:authorities="io.monteirodev.baking.provider"
+            android:name=".database.generated.BakingProvider"
+            android:authorities="io.monteirodev.baking.provider.BakingProvider"
             android:exported="false" />
 
     </application>
