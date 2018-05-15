@@ -11,9 +11,28 @@ import net.simonvt.schematic.annotation.TableEndpoint;
         database = BakingDatabase.class)
 public class BakingProvider {
 
+    private BakingProvider() {
+    }
+
     public static final String AUTHORITY = "io.monteirodev.baking.provider.BakingProvider";
 
-    @TableEndpoint(table = BakingDatabase.BAKING_RECIPES)
+    static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+
+    interface Path {
+        String RECIPES = "recipes";
+        String INGREDIENTS = "ingredients";
+        String STEPS = "steps";
+    }
+
+    private static Uri buildUri(String... paths) {
+        Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
+        for (String path : paths) {
+            builder.appendPath(path);
+        }
+        return builder.build();
+    }
+
+    @TableEndpoint(table = BakingDatabase.Tables.RECIPES)
     public static class BakingRecipes {
         @ContentUri(
                 path = "recipes",
