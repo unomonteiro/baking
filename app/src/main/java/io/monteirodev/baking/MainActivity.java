@@ -1,19 +1,18 @@
 package io.monteirodev.baking;
 
-import android.content.ContentValues;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import io.monteirodev.baking.database.BakingContract;
 import io.monteirodev.baking.database.BakingProvider;
+import io.monteirodev.baking.database.RecipeColumns;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -25,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements
     private RecipeAdapter mRecipeAdapter;
 
     static final String[] RECIPES_PROJECTION = {
-            BakingContract.COLUMN_NAME
+            RecipeColumns.NAME
     };
 
     static final int COL_NUM_NAME = 0;
@@ -40,18 +39,18 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecipeAdapter = new RecipeAdapter();
         mRecyclerView.setAdapter(mRecipeAdapter);
-        getContentResolver().delete(BakingProvider.BakingRecipes.CONTENT_URI,null, null);
+        getContentResolver().delete(BakingProvider.Recipes.CONTENT_URI,null, null);
         getSupportLoaderManager().initLoader(LOADER_ID_RECIPES, null, this);
     }
 
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-        return new CursorLoader(this, BakingProvider.BakingRecipes.CONTENT_URI,
+        return new CursorLoader(this, BakingProvider.Recipes.CONTENT_URI,
                 RECIPES_PROJECTION,
                 null,
                 null,
-                BakingContract.COLUMN_NAME + " DESC");
+                null);
     }
 
     @Override

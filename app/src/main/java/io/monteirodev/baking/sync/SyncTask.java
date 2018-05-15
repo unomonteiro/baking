@@ -6,11 +6,10 @@ import android.content.Context;
 import android.util.Log;
 
 import java.net.URL;
-import java.util.List;
+import java.util.ArrayList;
 
-import io.monteirodev.baking.database.BakingContract;
 import io.monteirodev.baking.database.BakingProvider;
-import io.monteirodev.baking.utils.JsonUtils;
+import io.monteirodev.baking.utils.BakingJsonUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
 
 public class SyncTask {
@@ -21,13 +20,32 @@ public class SyncTask {
         try {
             URL bakingUrl = NetworkUtils.getURL();
 
-            String jsonRecipeResponse = NetworkUtils.getResponseFromHttpUrl(bakingUrl);
+            String jsonResponse = NetworkUtils.getResponseFromHttpUrl(bakingUrl);
 
-            List<ContentValues[]> bakingValues = JsonUtils.getRecipeContentValues(jsonRecipeResponse);
+            ArrayList<ContentValues[]> bakingValues = BakingJsonUtils.getContentValues(jsonResponse);
 
-            if (bakingValues != null) {
-                ContentResolver bakingContentResolver = context.getContentResolver();
-                bakingContentResolver.bulkInsert(BakingProvider.BakingRecipes)
+            if (bakingValues != null && bakingValues.size() > 0) {
+                ContentResolver contentResolver = context.getContentResolver();
+
+                contentResolver.delete(
+                        BakingProvider.Recipes.CONTENT_URI, null, null);
+                contentResolver.delete(
+                        BakingProvider.Ingredients.CONTENT_URI, null, null);
+                contentResolver.delete(
+                        BakingProvider.Steps.CONTENT_URI, null, null);
+
+                contentResolver.bulkInsert(
+                        BakingProvider.Recipes.CONTENT_URI,
+                        bakingValues.get(BakingJsonUtils.RECIPES_INDEX)
+                );
+                contentResolver.bulkInsert(
+                        BakingProvider.Ingredients.CONTENT_URI,
+                        bakingValues.get(BakingJsonUtils.INGREDIENTS_INDEX)
+                );
+                contentResolver.bulkInsert(
+                        BakingProvider.Steps.CONTENT_URI,
+                        bakingValues.get(BakingJsonUtils.STEPS_INDEX)
+                );
 
             }
         } catch (Exception e) {
