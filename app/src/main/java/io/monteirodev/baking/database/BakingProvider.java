@@ -63,7 +63,7 @@ public class BakingProvider {
         @ContentUri(
                 path = Path.RECIPES,
                 type = Type.RECIPES,
-                defaultSort = RecipeColumns._ID + " DESC")
+                defaultSort = RecipeColumns.NAME + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.RECIPES);
 
 //        static final String INGREDIENT_COUNT = "(SELECT COUNT(*) FROM "
