@@ -11,17 +11,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import io.monteirodev.baking.api.BakingClient;
+import io.monteirodev.baking.api.BakingInterface;
 import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
+import io.monteirodev.baking.models.Recipe;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID_RECIPES = 0;
 
+    private ArrayList<Recipe> mRecipeList;
     private RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
+
+    BakingInterface mBakingInterface;
 
     static final String[] RECIPES_PROJECTION = {
             RecipeColumns.NAME
@@ -37,10 +49,21 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView = findViewById(R.id.recipes_recycler_view);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecipeAdapter = new RecipeAdapter();
-        mRecyclerView.setAdapter(mRecipeAdapter);
-        getContentResolver().delete(BakingProvider.Recipes.CONTENT_URI,null, null);
-        getSupportLoaderManager().initLoader(LOADER_ID_RECIPES, null, this);
+
+        mBakingInterface = BakingClient.getClient().create(BakingInterface.class);
+        Call<List<Recipe>> call = mBakingInterface.getRecipes();
+        call.enqueue(new Callback<List<Recipe>>() {
+            @Override
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                mRecipeList = new ArrayList<>(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                mRecipeList = null;
+            }
+        });
+
     }
 
     @NonNull
