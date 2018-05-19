@@ -47,7 +47,7 @@ public class BakingJsonUtils {
             JSONObject recipeJson = jsonResultArray.getJSONObject(i);
 
             ContentValues recipe = new ContentValues();
-            recipe.put(RecipeColumns._ID, recipeJson.getInt(KEY_ID));
+            recipe.put(RecipeColumns.ID, recipeJson.getInt(KEY_ID));
             recipe.put(RecipeColumns.NAME, recipeJson.getInt(KEY_NAME));
 
             // INGREDIENTS

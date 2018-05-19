@@ -1,7 +1,6 @@
 package io.monteirodev.baking.database;
 
-import android.provider.BaseColumns;
-
+import net.simonvt.schematic.annotation.AutoIncrement;
 import net.simonvt.schematic.annotation.DataType;
 import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.PrimaryKey;
@@ -9,9 +8,12 @@ import net.simonvt.schematic.annotation.PrimaryKey;
 import static net.simonvt.schematic.annotation.DataType.Type.INTEGER;
 import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
-public interface RecipeColumns extends BaseColumns {
+public interface RecipeColumns {
 
-    @DataType(TEXT) @NotNull
+    @DataType(INTEGER) @PrimaryKey @AutoIncrement @NotNull
+    String ID = "_id";
+
+    @DataType(TEXT)
     String NAME = "name";
 
     @DataType(INTEGER)
