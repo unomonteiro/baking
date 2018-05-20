@@ -31,6 +31,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    // firebase
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
+
     // retrofit
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'

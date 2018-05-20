@@ -24,8 +24,12 @@
             android:authorities="io.monteirodev.baking.provider.BakingProvider"
             android:exported="false" />
 
-        <service android:name=".sync.BakingSyncIntentService"
-            android:exported="false"/>
+        <service android:name=".sync.BakingFirebaseJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+            </intent-filter>
+        </service>
 
     </application>
 

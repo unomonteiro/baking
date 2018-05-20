@@ -15,9 +15,10 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.sync.SyncUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int ID_RECIPE_LOADER = 0;
+    private static final int ID_RECIPE_LOADER = 1;
 
     private RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
@@ -41,29 +42,45 @@ public class MainActivity extends AppCompatActivity {
         mRecipeAdapter = new RecipeAdapter();
         mRecyclerView.setAdapter(mRecipeAdapter);
 
-        getSupportLoaderManager().initLoader(ID_RECIPE_LOADER, null, mRecipeLoaderCallback);
+        getSupportLoaderManager().initLoader(ID_RECIPE_LOADER, null, this);
         SyncUtils.initialise(this);
     }
 
-    private LoaderManager.LoaderCallbacks<Cursor> mRecipeLoaderCallback = new LoaderManager.LoaderCallbacks<Cursor>() {
-        @NonNull
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-            return new CursorLoader(MainActivity.this, BakingProvider.Recipes.CONTENT_URI,
-                    RECIPES_PROJECTION,
-                    null,
-                    null,
-                    null);
-        }
+    @Override
+    @NonNull
+    public Loader<Cursor> onCreateLoader(int loaderId, @Nullable Bundle args) {
+        switch (loaderId) {
+            case ID_RECIPE_LOADER:
+                return new CursorLoader(MainActivity.this, BakingProvider.Recipes.CONTENT_URI,
+                        RECIPES_PROJECTION,
+                        null,
+                        null,
+                        null);
 
-        @Override
-        public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-            mRecipeAdapter.swapCursor(data);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
+    }
 
-        @Override
-        public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-            mRecipeAdapter.swapCursor(null);
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        switch (loader.getId()) {
+            case ID_RECIPE_LOADER:
+                mRecipeAdapter.swapCursor(data);
+                break;
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loader.getId());
         }
-    };
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case ID_RECIPE_LOADER:
+                mRecipeAdapter.swapCursor(null);
+                break;
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loader.getId());
+        }
+    }
 }
