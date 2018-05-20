@@ -5,16 +5,7 @@ import android.net.Uri;
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
-import net.simonvt.schematic.annotation.MapColumns;
 import net.simonvt.schematic.annotation.TableEndpoint;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static io.monteirodev.baking.database.BakingDatabase.Tables.INGREDIENTS;
-import static io.monteirodev.baking.database.BakingDatabase.Tables.RECIPES;
-import static io.monteirodev.baking.database.BakingDatabase.Tables.STEPS;
-import static io.monteirodev.baking.database.IngredientColumns.RECIPE_ID;
 
 @ContentProvider(
         authority = BakingProvider.AUTHORITY,
