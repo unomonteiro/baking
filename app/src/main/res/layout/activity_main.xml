@@ -8,6 +8,15 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recipes_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:lisitem="@layout/recipe_item.xml"/>
+
+    <ProgressBar
+        android:id="@+id/loading_view"
+        android:layout_height="@dimen/progress_bar_size"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        tools:visibility="visible"/>
 
 </FrameLayout>
