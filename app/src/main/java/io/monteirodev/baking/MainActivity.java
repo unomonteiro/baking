@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int ID_RECIPE_LOADER = 1;
 
     @BindView(R.id.recipes_recycler_view)
-    private RecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
 
