@@ -8,16 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     private Cursor mCursor;
 
     public class RecipeViewHolder extends RecyclerView.ViewHolder {
-        private final TextView nameText;
+        @BindView(R.id.recipe_item_name_text_view)
+        TextView nameText;
 
         public RecipeViewHolder(View itemView) {
             super(itemView);
-            nameText = itemView.findViewById(R.id.recipe_item_name_text_view);
+            ButterKnife.bind(this, itemView);
         }
     }
 

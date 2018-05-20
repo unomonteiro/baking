@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.sync.SyncUtils;
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int ID_RECIPE_LOADER = 1;
 
+    @BindView(R.id.recipes_recycler_view)
     private RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
@@ -35,8 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mRecyclerView = findViewById(R.id.recipes_recycler_view);
+        ButterKnife.bind(this);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecipeAdapter = new RecipeAdapter();
