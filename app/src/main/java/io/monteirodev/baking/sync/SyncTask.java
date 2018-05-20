@@ -1,16 +1,24 @@
 package io.monteirodev.baking.sync;
 
-import android.content.ContentResolver;
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
+import io.monteirodev.baking.api.BakingClient;
+import io.monteirodev.baking.api.BakingInterface;
 import io.monteirodev.baking.database.BakingProvider;
-import io.monteirodev.baking.utils.BakingJsonUtils;
-import io.monteirodev.baking.utils.NetworkUtils;
+import io.monteirodev.baking.models.Ingredient;
+import io.monteirodev.baking.models.Recipe;
+import io.monteirodev.baking.models.Step;
+
+import static io.monteirodev.baking.utils.RecipeUtils.getIngredientValues;
+import static io.monteirodev.baking.utils.RecipeUtils.getRecipeValues;
+import static io.monteirodev.baking.utils.RecipeUtils.getStepValues;
 
 public class SyncTask {
 
@@ -18,38 +26,48 @@ public class SyncTask {
 
     synchronized public static void syncRecipes(Context context) {
         try {
-            URL bakingUrl = NetworkUtils.getURL();
+            BakingInterface bakingInterface = BakingClient.getClient().create(BakingInterface.class);
+            List<Recipe> recipes = bakingInterface.getRecipes().execute().body();
 
-            String jsonResponse = NetworkUtils.getResponseFromHttpUrl(bakingUrl);
+            if (recipes != null && recipes.size() > 0) {
+                ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
-            ArrayList<ContentValues[]> bakingValues = BakingJsonUtils.getContentValues(jsonResponse);
+                operations.add(delete(BakingProvider.Recipes.CONTENT_URI));
+                operations.add(delete(BakingProvider.Ingredients.CONTENT_URI));
+                operations.add(delete(BakingProvider.Steps.CONTENT_URI));
 
-            if (bakingValues != null && bakingValues.size() > 0) {
-                ContentResolver contentResolver = context.getContentResolver();
+                for (Recipe recipe : recipes) {
+                    operations.add(insert(BakingProvider.Recipes.CONTENT_URI,
+                            getRecipeValues(recipe)));
 
-                contentResolver.delete(
-                        BakingProvider.Recipes.CONTENT_URI, null, null);
-                contentResolver.delete(
-                        BakingProvider.Ingredients.CONTENT_URI, null, null);
-                contentResolver.delete(
-                        BakingProvider.Steps.CONTENT_URI, null, null);
+                    for (Ingredient ingredient : recipe.getIngredients()) {
+                        operations.add(insert(BakingProvider.Ingredients.CONTENT_URI,
+                                getIngredientValues(recipe.getId(), ingredient)));
+                    }
 
-                contentResolver.bulkInsert(
-                        BakingProvider.Recipes.CONTENT_URI,
-                        bakingValues.get(BakingJsonUtils.RECIPES_INDEX)
-                );
-                contentResolver.bulkInsert(
-                        BakingProvider.Ingredients.CONTENT_URI,
-                        bakingValues.get(BakingJsonUtils.INGREDIENTS_INDEX)
-                );
-                contentResolver.bulkInsert(
-                        BakingProvider.Steps.CONTENT_URI,
-                        bakingValues.get(BakingJsonUtils.STEPS_INDEX)
-                );
-
+                    for (Step step : recipe.getSteps()) {
+                        operations.add(insert(BakingProvider.Steps.CONTENT_URI,
+                                getStepValues(recipe.getId(), step)));
+                    }
+                }
+                context.getContentResolver().applyBatch(BakingProvider.AUTHORITY, operations);
             }
         } catch (Exception e) {
             Log.e(TAG, "syncRecipes: " + e.getMessage(), e);
         }
     }
+
+    private static ContentProviderOperation delete(Uri contentUri) {
+        return ContentProviderOperation.newDelete(contentUri)
+                .withSelection(null, null)
+                .build();
+    }
+
+    private static ContentProviderOperation insert(Uri contentUri, ContentValues stepValues) {
+        return ContentProviderOperation.newInsert(
+                contentUri)
+                .withValues(stepValues)
+                .build();
+    }
+
 }
