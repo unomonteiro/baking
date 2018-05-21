@@ -1,4 +1,4 @@
-package io.monteirodev.baking;
+package io.monteirodev.baking.ui;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.monteirodev.baking.R;
 import io.monteirodev.baking.database.RecipeColumns;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {

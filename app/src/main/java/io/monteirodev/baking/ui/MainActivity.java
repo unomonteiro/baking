@@ -1,5 +1,6 @@
-package io.monteirodev.baking;
+package io.monteirodev.baking.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,13 +12,13 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.facebook.stetho.Stetho;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.monteirodev.baking.R;
 import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.sync.SyncUtils;
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements
 
     LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
-
 
     static final String[] RECIPES_PROJECTION = {
             RecipeColumns.ID,
@@ -143,5 +143,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRecipeClick(int recipeId) {
         Timber.d( "onRecipeClick: " + recipeId);
+        Intent intent = new Intent(this, RecipeActivity.class);
+        startActivity(intent);
     }
 }

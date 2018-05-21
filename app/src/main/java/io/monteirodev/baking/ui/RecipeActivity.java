@@ -1,7 +1,9 @@
-package io.monteirodev.baking;
+package io.monteirodev.baking.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import io.monteirodev.baking.R;
 
 public class RecipeActivity extends AppCompatActivity {
 
