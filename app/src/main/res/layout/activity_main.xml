@@ -3,12 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="io.monteirodev.baking.MainActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recipes_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        tools:layoutManager="android.support.v7.widget.GridLayoutManager"
+        tools:spanCount="1"
         tools:lisitem="@layout/recipe_item.xml"/>
 
     <ProgressBar

@@ -11,6 +11,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import butterknife.BindView;
@@ -21,12 +22,14 @@ import io.monteirodev.baking.sync.SyncUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,RecipeAdapter.RecipeClickListener {
 
     private static final int ID_RECIPE_LOADER = 1;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.recipes_recycler_view)
     RecyclerView mRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
     @BindView(R.id.loading_view)
     View mLoadingView;
 
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements
             RecipeColumns.NAME
     };
 
-    static final int COL_NUM_NAME = 0;
     private Snackbar mSnackbar;
 
     @Override
@@ -48,8 +50,11 @@ public class MainActivity extends AppCompatActivity implements
         ButterKnife.bind(this);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecipeAdapter = new RecipeAdapter();
+        mRecipeAdapter = new RecipeAdapter(this);
         mRecyclerView.setAdapter(mRecipeAdapter);
+        mRecyclerView.setHasFixedSize(true);
+
+        showLoading();
 
         getSupportLoaderManager().initLoader(ID_RECIPE_LOADER, null, this);
         SyncUtils.initialise(this);
@@ -79,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements
                     checkInternet();
                 } else {
                     mRecipeAdapter.swapCursor(data);
+                    if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                    mRecyclerView.smoothScrollToPosition(mPosition);
+                    showRecipeList();
                 }
                 break;
             default:
@@ -91,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (loader.getId()) {
             case ID_RECIPE_LOADER:
                 mRecipeAdapter.swapCursor(null);
+                showLoading();
                 break;
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loader.getId());
@@ -109,13 +118,25 @@ public class MainActivity extends AppCompatActivity implements
         mSnackbar.setAction(R.string.retry, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 SyncUtils.startImmediateSync(MainActivity.this);
-//                getSupportLoaderManager().restartLoader(
-//                        ID_RECIPE_LOADER, null, MainActivity.this);
                 mSnackbar.dismiss();
             }
         });
         mSnackbar.show();
+    }
+
+    private void showRecipeList() {
+        mLoadingView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoading() {
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onRecipeClick(int recipeId) {
+        Log.d(TAG, "onRecipeClick: " + recipeId);
     }
 }

@@ -6,23 +6,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.monteirodev.baking.database.RecipeColumns;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
+    private final RecipeClickListener mClickListener;
     private Cursor mCursor;
 
-    public class RecipeViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.recipe_item_name_text_view)
-        TextView nameText;
-
-        public RecipeViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
+    public RecipeAdapter(RecipeClickListener clickListener) {
+        mClickListener = clickListener;
     }
 
     @NonNull
@@ -37,8 +36,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         if (mCursor == null || !mCursor.moveToPosition(position)) return;
 
-        String name = mCursor.getString(MainActivity.COL_NUM_NAME);
-        holder.nameText.setText(name);
+        String name = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.NAME));
+        holder.recipeName.setText(name);
+//        String imageUrl = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.IMAGE));
+//        Picasso.with(holder.itemView.getContext())
+//                .load(imageUrl)
+//                .placeholder(R.drawable.ic_cupcake)
+//                .error(R.drawable.ic_cupcake)
+//                .into(holder.recipeImage);
     }
 
     @Override
@@ -53,4 +58,30 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         mCursor = newCursor;
         notifyDataSetChanged();
     }
+
+    public interface RecipeClickListener {
+        void onRecipeClick(int recipeId);
+    }
+
+    public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        @BindView(R.id.recipe_item_name_text_view)
+        TextView recipeName;
+        @BindView(R.id.recipe_item_image_view)
+        ImageView recipeImage;
+
+
+        public RecipeViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int recipeId = mCursor.getInt(mCursor.getColumnIndex(RecipeColumns.ID));
+            mClickListener.onRecipeClick(recipeId);
+        }
+    }
+
 }

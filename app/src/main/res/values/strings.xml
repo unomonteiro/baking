@@ -3,5 +3,6 @@
 
     <string name="oops_check_internet">Oops no wifi, no recipes!</string>
     <string name="retry">retry</string>
+    <string name="recipe_image">recipe image</string>
 
 </resources>
