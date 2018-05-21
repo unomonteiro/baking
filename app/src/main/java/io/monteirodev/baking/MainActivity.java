@@ -14,6 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.facebook.stetho.Stetho;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.monteirodev.baking.database.BakingProvider;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mLayoutManager = new LinearLayoutManager(this);

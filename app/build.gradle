@@ -51,6 +51,7 @@ dependencies {
     // Schematic dependencies for ContentProvider
     implementation 'net.simonvt.schematic:schematic:0.7.0'
     annotationProcessor 'net.simonvt.schematic:schematic-compiler:0.7.0'
+    implementation 'com.facebook.stetho:stetho:1.5.0'
 
 }
 
