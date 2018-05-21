@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements
 
 
     static final String[] RECIPES_PROJECTION = {
-            RecipeColumns.NAME
+            RecipeColumns.NAME,
+            RecipeColumns.IMAGE
     };
 
     private Snackbar mSnackbar;

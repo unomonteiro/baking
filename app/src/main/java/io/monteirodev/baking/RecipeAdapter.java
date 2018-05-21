@@ -38,12 +38,18 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         String name = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.NAME));
         holder.recipeName.setText(name);
-//        String imageUrl = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.IMAGE));
-//        Picasso.with(holder.itemView.getContext())
-//                .load(imageUrl)
-//                .placeholder(R.drawable.ic_cupcake)
-//                .error(R.drawable.ic_cupcake)
-//                .into(holder.recipeImage);
+        String imageUrl = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.IMAGE));
+        if (imageUrl.isEmpty()) {
+            holder.recipeImage.setImageResource(R.drawable.ic_cupcake);
+        } else {
+            Picasso.with(holder.recipeImage.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_cupcake)
+                    .fit()
+                    .centerCrop()
+                    .error(R.drawable.ic_cupcake)
+                    .into(holder.recipeImage);
+        }
     }
 
     @Override
