@@ -15,6 +15,7 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.models.Ingredient;
 import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.models.Step;
+import timber.log.Timber;
 
 import static io.monteirodev.baking.utils.RecipeUtils.getIngredientValues;
 import static io.monteirodev.baking.utils.RecipeUtils.getRecipeValues;
@@ -53,7 +54,7 @@ public class SyncTask {
                 context.getContentResolver().applyBatch(BakingProvider.AUTHORITY, operations);
             }
         } catch (Exception e) {
-            Log.e(TAG, "syncRecipes: " + e.getMessage(), e);
+            Timber.e( "syncRecipes: " + e.getMessage(), e);
         }
     }
 

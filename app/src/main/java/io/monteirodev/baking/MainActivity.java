@@ -22,12 +22,12 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.sync.SyncUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,RecipeAdapter.RecipeClickListener {
 
     private static final int ID_RECIPE_LOADER = 1;
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.recipes_recycler_view)
     RecyclerView mRecyclerView;
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
     static final String[] RECIPES_PROJECTION = {
+            RecipeColumns.ID,
             RecipeColumns.NAME,
             RecipeColumns.IMAGE
     };
@@ -141,6 +142,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onRecipeClick(int recipeId) {
-        Log.d(TAG, "onRecipeClick: " + recipeId);
+        Timber.d( "onRecipeClick: " + recipeId);
     }
 }

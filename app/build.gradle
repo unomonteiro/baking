@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     // picasso
+    //noinspection GradleDependency bad version
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
     // retrofit
@@ -52,6 +53,9 @@ dependencies {
     implementation 'net.simonvt.schematic:schematic:0.7.0'
     annotationProcessor 'net.simonvt.schematic:schematic-compiler:0.7.0'
     implementation 'com.facebook.stetho:stetho:1.5.0'
+
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.6.0'
 
 }
 
