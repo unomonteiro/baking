@@ -22,19 +22,16 @@
 
             <ImageView
                 android:id="@+id/recipe_item_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="128dp"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
                 android:layout_gravity="center_horizontal"
-                android:adjustViewBounds="true"
                 android:contentDescription="@string/recipe_image"
-                android:scaleType="centerCrop"
-                tools:src="@drawable/ic_cupcake" />
+                tools:src="@drawable/pexels" />
 
             <TextView
                 android:id="@+id/recipe_item_name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/recipe_item_image_view"
                 android:textAlignment="center"
                 android:textSize="32sp"
                 tools:text="Cookies" />
