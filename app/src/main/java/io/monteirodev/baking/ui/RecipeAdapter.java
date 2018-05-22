@@ -40,15 +40,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         String name = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.NAME));
         holder.recipeName.setText(name);
         String imageUrl = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.IMAGE));
+        // for image testing
+//        if (position == 1) {
+//            //imageUrl = "http://www.brickcitybears.com/wp-content/uploads/2018/04/2527-best-squirrels-images-on-pinterest.jpg";
+//            imageUrl = "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg";
+//        }
         if (imageUrl.isEmpty()) {
-            holder.recipeImage.setImageResource(R.drawable.ic_cupcake);
+            holder.recipeImage.setVisibility(View.GONE);
         } else {
             Picasso.with(holder.recipeImage.getContext())
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_cupcake)
-                    .fit()
-                    .centerCrop()
-                    .error(R.drawable.ic_cupcake)
                     .into(holder.recipeImage);
         }
     }
