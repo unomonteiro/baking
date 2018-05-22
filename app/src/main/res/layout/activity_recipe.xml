@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.RecipeActivity">
 
-    <fragment
-        android:id="@+id/recipe_fragment"
-        android:name="io.monteirodev.baking.ui.RecipeFragment"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recipe_detail_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:spanCount="1"
+        tools:listitem="@layout/recipe_detail_ingredients_item" />
 
 </FrameLayout>
