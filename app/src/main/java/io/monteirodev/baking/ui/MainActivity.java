@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onRecipeClick(int recipeId) {
         Timber.d( "onRecipeClick: " + recipeId);
         Intent intent = new Intent(this, RecipeActivity.class);
+        intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE_ID, recipeId);
         startActivity(intent);
     }
 }

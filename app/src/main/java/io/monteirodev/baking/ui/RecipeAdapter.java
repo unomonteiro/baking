@@ -37,6 +37,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
         if (mCursor == null || !mCursor.moveToPosition(position)) return;
 
+        holder.itemView.setTag(mCursor.getInt(mCursor.getColumnIndex(RecipeColumns.ID)));
         String name = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.NAME));
         holder.recipeName.setText(name);
         String imageUrl = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.IMAGE));
@@ -78,7 +79,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         ImageView recipeImage;
 
 
-        public RecipeViewHolder(View itemView) {
+        RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
@@ -86,9 +87,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int recipeId = mCursor.getInt(mCursor.getColumnIndex(RecipeColumns.ID));
+            int recipeId = (int) v.getTag();
             mClickListener.onRecipeClick(recipeId);
         }
     }
