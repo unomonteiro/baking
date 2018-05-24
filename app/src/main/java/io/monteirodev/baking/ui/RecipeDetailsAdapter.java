@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,8 +75,8 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
             case INGREDIENTS_VIEW_TYPE: {
                 IngredientsViewHolder ingredientsViewHolder = (IngredientsViewHolder) holder;
                 List<String> ingredientList = getIngredientList(context);
-                ingredientsViewHolder.mIngredientListTextView.setText(
-                        TextUtils.join("\n", ingredientList));
+                ingredientsViewHolder.mIngredientListTextView.setText(Html.fromHtml(
+                        TextUtils.join("<br>", ingredientList)), TextView.BufferType.SPANNABLE);
                 break;
             }
             case STEP_VIEW_TYPE: {
