@@ -2,9 +2,11 @@ package io.monteirodev.baking.ui;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,7 +77,7 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
             case INGREDIENTS_VIEW_TYPE: {
                 IngredientsViewHolder ingredientsViewHolder = (IngredientsViewHolder) holder;
                 List<String> ingredientList = getIngredientList(context);
-                ingredientsViewHolder.mIngredientListTextView.setText(Html.fromHtml(
+                ingredientsViewHolder.mIngredientListTextView.setText(fromHtml(
                         TextUtils.join("<br>", ingredientList)), TextView.BufferType.SPANNABLE);
                 break;
             }
@@ -119,6 +121,19 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         }
         return ingredientList;
+    }
+
+    /**
+     * Html.fromHtml deprecated in Android N
+     * https://stackoverflow.com/a/37905107/6997703
+     */
+    @SuppressWarnings("deprecation")
+    private static Spanned fromHtml(String html){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            return Html.fromHtml(html);
+        }
     }
 
     @Override
