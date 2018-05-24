@@ -80,6 +80,17 @@ public class BakingProvider {
 //                + "."
 //                + RecipeColumns._ID
 //                + ")";
+
+        @InexactContentUri(
+                path = Path.RECIPES + "/#",
+                name = "recipe_id",
+                type = Type.STEPS,
+                whereColumn = RecipeColumns.ID,
+                pathSegment = 1
+        )
+        public static Uri recipeWithId(int id) {
+            return buildUri(Path.RECIPES, String.valueOf(id));
+        }
     }
 
     @TableEndpoint(table = BakingDatabase.Tables.INGREDIENTS)
