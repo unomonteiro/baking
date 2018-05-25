@@ -1,5 +1,6 @@
 package io.monteirodev.baking.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +26,7 @@ public class RecipeActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, RecipeDetailsAdapter.StepClickListener {
 
     public static final String INTENT_EXTRA_RECIPE_ID = "intent_extra_recipe_id";
+    public static final String INTENT_EXTRA_STEP_ID = "intent_extra_step_id";
 
     private static final int ID_RECIPE_LOADER = 2;
     private static final int ID_INGREDIENTS_LOADER = 3;
@@ -169,5 +171,8 @@ public class RecipeActivity extends AppCompatActivity implements
     @Override
     public void onStepClick(int stepId) {
         Timber.d("Step clicked: " + stepId);
+        Intent intent = new Intent(this, StepActivity.class);
+        intent.putExtra(INTENT_EXTRA_STEP_ID, stepId);
+        startActivity(intent);
     }
 }
