@@ -107,6 +107,7 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
     private List<String> getIngredientList(Context context) {
         List<String> ingredientList = new ArrayList<>();
         if (hasIngredientList() && context != null) {
+            mIngredientsCursor.moveToPosition(-1);
             while (mIngredientsCursor.moveToNext()) {
                 float quantityFloat = mIngredientsCursor.getFloat(
                         mIngredientsCursor.getColumnIndex(IngredientColumns.QUANTITY));
