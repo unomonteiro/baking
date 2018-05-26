@@ -85,6 +85,7 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 StepViewHolder stepViewHolder = (StepViewHolder) holder;
                 int adjustedPosition = position + (hasIngredientList() ? -1 : 0);
                 mStepsCursor.moveToPosition(adjustedPosition);
+                stepViewHolder.itemView.setTag(mStepsCursor.getInt(mStepsCursor.getColumnIndex(StepColumns.ID)));
                 int stepNumber = mStepsCursor.getInt(mStepsCursor.getColumnIndex(
                         StepColumns.STEP));
                 String shortDescription = mStepsCursor.getString(mStepsCursor.getColumnIndex(StepColumns.SHORT_DESCRIPTION));
@@ -94,7 +95,6 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
                     String numberShortDescription = context.getString(
                             R.string.number_step, stepNumber, shortDescription);
                     stepViewHolder.mStepTextView.setText(numberShortDescription);
-                    stepViewHolder.itemView.setTag(mStepsCursor.getInt(mStepsCursor.getColumnIndex(StepColumns.ID)));
                 }
                 break;
             }

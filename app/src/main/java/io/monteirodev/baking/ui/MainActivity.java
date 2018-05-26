@@ -62,7 +62,13 @@ public class MainActivity extends AppCompatActivity implements
         showLoading();
 
         getSupportLoaderManager().initLoader(ID_RECIPE_LOADER, null, this);
-        SyncUtils.initialise(this);
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
     }
 
     @Override

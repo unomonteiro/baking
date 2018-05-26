@@ -11,18 +11,20 @@ import timber.log.Timber;
 
 import static io.monteirodev.baking.ui.RecipeActivity.INTENT_EXTRA_STEP_ID;
 
-public class StepActivity extends AppCompatActivity implements StepFragment.OnStepChangeListener {
+public class StepDetailActivity extends AppCompatActivity implements StepDetailFragment.OnStepChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step);
-        Toast.makeText(this, "Step id: " + getIntent().getIntExtra(INTENT_EXTRA_STEP_ID, -1), Toast.LENGTH_LONG).show();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        int stepId = getIntent().getIntExtra(INTENT_EXTRA_STEP_ID, -1);
         if (savedInstanceState == null) {
-            StepFragment stepFragment = new StepFragment();
+            StepDetailFragment stepDetailFragment = new StepDetailFragment();
+            stepDetailFragment.setStepId(stepId);
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .add(R.id.step_container, stepFragment)
+                    .add(R.id.step_container, stepDetailFragment)
                     .commit();
         }
     }

@@ -28,6 +28,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
+        <activity android:name=".ui.StepDetailActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.RecipeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.RecipeActivity" />
+        </activity>
 
         <provider
             android:name=".database.generated.BakingProvider"
@@ -45,7 +52,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.StepActivity"></activity>
     </application>
 
 </manifest>

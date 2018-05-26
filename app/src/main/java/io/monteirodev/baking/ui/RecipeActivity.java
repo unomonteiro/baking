@@ -171,7 +171,7 @@ public class RecipeActivity extends AppCompatActivity implements
     @Override
     public void onStepClick(int stepId) {
         Timber.d("Step clicked: " + stepId);
-        Intent intent = new Intent(this, StepActivity.class);
+        Intent intent = new Intent(this, StepDetailActivity.class);
         intent.putExtra(INTENT_EXTRA_STEP_ID, stepId);
         startActivity(intent);
     }
