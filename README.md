@@ -7,3 +7,4 @@ icon
 recyclerView types
 https://stackoverflow.com/a/26245463/6997703
 
+https://codelabs.developers.google.com/codelabs/exoplayer-intro/index.html?index=..%2F..%2Fio2017#0
