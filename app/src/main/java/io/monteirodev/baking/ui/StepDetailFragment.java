@@ -3,6 +3,7 @@ package io.monteirodev.baking.ui;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +15,19 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.monteirodev.baking.R;
+import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.models.Step;
+import timber.log.Timber;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class StepDetailFragment extends Fragment {
+    private static final String STEPS_KEY = "steps_key";
+    private static final String STEP_INDEX_KEY = "step_index_key";
 
     private OnStepChangeListener mOnStepChangeListener;
 
@@ -46,6 +52,10 @@ public class StepDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         unbinder = ButterKnife.bind(this, rootView);
+        if(savedInstanceState != null) {
+            mSteps = savedInstanceState.getParcelableArrayList(STEPS_KEY);
+            mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
+        }
         updateStepViews();
         return rootView;
     }
@@ -88,24 +98,52 @@ public class StepDetailFragment extends Fragment {
         Context context = getContext();
         if (context != null && mSteps != null && mSteps.size() > 0 && mStepIndex > -1) {
             Step step = mSteps.get(mStepIndex);
-            int stepIndex = step.getId();
             String shortDescription = step.getShortDescription();
             String description = step.getDescription();
-            boolean isFirst = stepIndex == 0;
-            boolean isLast = stepIndex == mSteps.size() -1;
+            boolean isFirstStep = mStepIndex == 0;
+            boolean isLastStep = mStepIndex == mSteps.size() -1;
 
             mShortDescriptionTextView.setText(shortDescription);
             if (description.equalsIgnoreCase(shortDescription)) {
                 mDescriptionTextView.setVisibility(INVISIBLE);
             } else {
+                mDescriptionTextView.setVisibility(VISIBLE);
                 mDescriptionTextView.setText(description);
             }
-            mPreviousButton.setVisibility(isFirst ? INVISIBLE : VISIBLE);
-            mNextButton.setVisibility(isLast ? INVISIBLE : VISIBLE);
+            mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
+            mPreviousButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    previousStep();
+                }
+            });
+            mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
+            mNextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    nextStep();
+                }
+            });
         }
+    }
+
+    private void previousStep() {
+        mStepIndex --;
+        updateStepViews();
+    }
+
+    private void nextStep() {
+        mStepIndex++;
+        updateStepViews();
     }
 
     public interface OnStepChangeListener {
         void onStepChange(Uri uri);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(STEPS_KEY, mSteps);
+        outState.putInt(STEP_INDEX_KEY, mStepIndex);
     }
 }
