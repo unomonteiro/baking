@@ -111,28 +111,17 @@ public class StepDetailFragment extends Fragment {
                 mDescriptionTextView.setText(description);
             }
             mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
-            mPreviousButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    previousStep();
-                }
-            });
             mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
-            mNextButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    nextStep();
-                }
-            });
         }
     }
-
-    private void previousStep() {
+    @OnClick(R.id.previous_button)
+    void previousStep() {
         mStepIndex --;
         updateStepViews();
     }
 
-    private void nextStep() {
+    @OnClick(R.id.next_button)
+    void nextStep() {
         mStepIndex++;
         updateStepViews();
     }
