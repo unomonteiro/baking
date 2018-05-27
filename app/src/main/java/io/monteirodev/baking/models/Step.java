@@ -1,9 +1,14 @@
 package io.monteirodev.baking.models;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
+
+import net.simonvt.schematic.Cursors;
+
+import io.monteirodev.baking.database.StepColumns;
 
 public class Step implements Parcelable {
 
@@ -24,6 +29,14 @@ public class Step implements Parcelable {
     private String thumbnailURL;
 
     public Step() {
+    }
+
+    public Step(Cursor data) {
+        this.id = Cursors.getInt(data, StepColumns.STEP);
+        this.shortDescription = Cursors.getString(data, StepColumns.SHORT_DESCRIPTION);
+        this.description = Cursors.getString(data, StepColumns.DESCRIPTION);
+        this.videoURL = Cursors.getString(data, StepColumns.VIDEO_URL);
+        this.thumbnailURL = Cursors.getString(data, StepColumns.THUMBNAIL_URL);
     }
 
     public Integer getId() {

@@ -1,7 +1,6 @@
 package io.monteirodev.baking.ui;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -20,16 +19,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.monteirodev.baking.R;
-import io.monteirodev.baking.database.IngredientColumns;
-import io.monteirodev.baking.database.StepColumns;
+import io.monteirodev.baking.models.Ingredient;
+import io.monteirodev.baking.models.Step;
 
 public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int INGREDIENTS_VIEW_TYPE = 0;
     private static final int STEP_VIEW_TYPE = 1;
 
     final private StepClickListener mStepClickListener;
-    private Cursor mIngredientsCursor;
-    private Cursor mStepsCursor;
+    private List<Ingredient> mIngredients;
+    private List<Step> mSteps;
 
     public RecipeDetailsAdapter(StepClickListener stepClickListener) {
         mStepClickListener = stepClickListener;
@@ -76,7 +75,7 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
         switch (viewType) {
             case INGREDIENTS_VIEW_TYPE: {
                 IngredientsViewHolder ingredientsViewHolder = (IngredientsViewHolder) holder;
-                List<String> ingredientList = getIngredientList(context);
+                List<String> ingredientList = getIngredientsString(context);
                 ingredientsViewHolder.mIngredientListTextView.setText(fromHtml(
                         TextUtils.join("<br>", ingredientList)), TextView.BufferType.SPANNABLE);
                 break;
@@ -84,18 +83,17 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
             case STEP_VIEW_TYPE: {
                 StepViewHolder stepViewHolder = (StepViewHolder) holder;
                 int adjustedPosition = position + (hasIngredientList() ? -1 : 0);
-                mStepsCursor.moveToPosition(adjustedPosition);
-                stepViewHolder.itemView.setTag(mStepsCursor.getInt(mStepsCursor.getColumnIndex(StepColumns.ID)));
-                int stepNumber = mStepsCursor.getInt(mStepsCursor.getColumnIndex(
-                        StepColumns.STEP));
-                String shortDescription = mStepsCursor.getString(mStepsCursor.getColumnIndex(StepColumns.SHORT_DESCRIPTION));
-                if (stepNumber == 0) {
-                    stepViewHolder.mStepTextView.setText(shortDescription);
-                } else {
-                    String numberShortDescription = context.getString(
-                            R.string.number_step, stepNumber, shortDescription);
-                    stepViewHolder.mStepTextView.setText(numberShortDescription);
+                Step step = mSteps.get(adjustedPosition);
+
+                int stepOrder = step.getId();
+                stepViewHolder.itemView.setTag(stepOrder);
+                String shortDescription = step.getShortDescription();
+                String stepText = shortDescription;
+                if (stepOrder > 0) {
+                    stepText = context.getString(R.string.number_step, stepOrder, shortDescription);
                 }
+                stepViewHolder.mStepTextView.setText(stepText);
+
                 break;
             }
             default:
@@ -104,24 +102,19 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @NonNull
-    private List<String> getIngredientList(Context context) {
-        List<String> ingredientList = new ArrayList<>();
+    private List<String> getIngredientsString(Context context) {
+        List<String> ingredientsString = new ArrayList<>();
         if (hasIngredientList() && context != null) {
-            mIngredientsCursor.moveToPosition(-1);
-            while (mIngredientsCursor.moveToNext()) {
-                float quantityFloat = mIngredientsCursor.getFloat(
-                        mIngredientsCursor.getColumnIndex(IngredientColumns.QUANTITY));
+            for (Ingredient ingredientObj : mIngredients) {
                 DecimalFormat df = new DecimalFormat("0.##");
-                String quantity = df.format(quantityFloat);
-                String measure = mIngredientsCursor.getString(
-                        mIngredientsCursor.getColumnIndex(IngredientColumns.MEASURE));
-                String ingredient = mIngredientsCursor.getString(
-                        mIngredientsCursor.getColumnIndex(IngredientColumns.INGREDIENT));
-                ingredientList.add(context.getString(
+                String quantity = df.format((float) ingredientObj.getQuantity());
+                String measure = ingredientObj.getMeasure();
+                String ingredient = ingredientObj.getIngredient();
+                ingredientsString.add(context.getString(
                         R.string.quantity_measure_ingredient, quantity, measure, ingredient));
             }
         }
-        return ingredientList;
+        return ingredientsString;
     }
 
     /**
@@ -156,29 +149,29 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    public void swapIngredientsCursor(Cursor newIngredientsCursor) {
-        mIngredientsCursor = newIngredientsCursor;
+    public void setIngredients(List<Ingredient> newIngredients) {
+        mIngredients = newIngredients;
         notifyDataSetChanged();
     }
 
-    public void swapStepsCursor(Cursor newStepsCursor) {
-        mStepsCursor = newStepsCursor;
+    public void setSteps(List<Step> newSteps) {
+        mSteps = newSteps;
         notifyDataSetChanged();
     }
 
     private boolean hasIngredientList() {
-        return mIngredientsCursor != null && mIngredientsCursor.getCount() > 0;
+        return mIngredients != null && mIngredients.size() > 0;
     }
 
     private int getStepsCount() {
-        if (mStepsCursor == null) {
+        if (mSteps == null) {
             return 0;
         }
-        return mStepsCursor.getCount();
+        return mSteps.size();
     }
 
     public interface StepClickListener {
-        void onStepClick(int stepId);
+        void onStepClick(int stepIndex);
     }
 
     class IngredientsViewHolder extends RecyclerView.ViewHolder {
@@ -206,8 +199,8 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         @Override
         public void onClick(View v) {
-            int stepId = (int) v.getTag();
-            mStepClickListener.onStepClick(stepId);
+            int stepIndex = (int) v.getTag();
+            mStepClickListener.onStepClick(stepIndex);
         }
     }
 }

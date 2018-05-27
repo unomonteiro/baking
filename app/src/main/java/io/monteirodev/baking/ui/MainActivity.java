@@ -16,11 +16,13 @@ import android.view.View;
 
 import com.facebook.stetho.Stetho;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.database.BakingProvider;
-import io.monteirodev.baking.database.RecipeColumns;
+import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.sync.SyncUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
 import timber.log.Timber;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,RecipeAdapter.RecipeClickListener {
 
     private static final int ID_RECIPE_LOADER = 1;
+    private static final String RECIPE_LIST_KEY = "recipe_list_key";
 
     @BindView(R.id.recipes_recycler_view)
     RecyclerView mRecyclerView;
@@ -39,18 +42,20 @@ public class MainActivity extends AppCompatActivity implements
     LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
 
-    static final String[] RECIPES_PROJECTION = {
-            RecipeColumns.ID,
-            RecipeColumns.NAME,
-            RecipeColumns.IMAGE
-    };
-
     private Snackbar mSnackbar;
+    private ArrayList<Recipe> mRecipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
+        Timber.d("OnCreate()");
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mLayoutManager = new LinearLayoutManager(this);
@@ -59,16 +64,16 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(mRecipeAdapter);
         mRecyclerView.setHasFixedSize(true);
 
-        showLoading();
+        if (savedInstanceState == null || mRecipes == null || mRecipes.size() == 0) {
+            showLoading();
+            checkInternet();
+        } else {
+            mRecipes = savedInstanceState.getParcelable(RECIPE_LIST_KEY);
+            mRecipeAdapter.setRecipes(mRecipes);
+            showRecipeList();
+        }
 
-        getSupportLoaderManager().initLoader(ID_RECIPE_LOADER, null, this);
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(
-                                Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(
-                                Stetho.defaultInspectorModulesProvider(this))
-                        .build());
+        SyncUtils.initialise(this);
     }
 
     @Override
@@ -76,32 +81,39 @@ public class MainActivity extends AppCompatActivity implements
     public Loader<Cursor> onCreateLoader(int loaderId, @Nullable Bundle args) {
         switch (loaderId) {
             case ID_RECIPE_LOADER:
+                Timber.d("onCreateLoader " + loaderId);
                 return new CursorLoader(MainActivity.this, BakingProvider.Recipes.CONTENT_URI,
-                        RECIPES_PROJECTION,
+                        null,
                         null,
                         null,
                         null);
 
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
+    }
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-        switch (loader.getId()) {
+        int loaderId = loader.getId();
+        switch (loaderId) {
             case ID_RECIPE_LOADER:
+                Timber.d("onLoadFinished " + loaderId);
                 if (data == null || data.getCount() == 0) {
                     checkInternet();
                 } else {
-                    mRecipeAdapter.swapCursor(data);
-                    if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                    mRecyclerView.smoothScrollToPosition(mPosition);
+                    ArrayList<Recipe> recipes = new ArrayList<>();
+                    data.moveToPosition(-1);
+                    while (data.moveToNext()) {
+                        recipes.add(new Recipe(data));
+                    }
+                    mRecipes = recipes;
+                    mRecipeAdapter.setRecipes(mRecipes);
                     showRecipeList();
                 }
                 break;
             default:
-                throw new RuntimeException("Loader Not Implemented: " + loader.getId());
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
     }
 
@@ -109,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         switch (loader.getId()) {
             case ID_RECIPE_LOADER:
-                mRecipeAdapter.swapCursor(null);
+                mRecipeAdapter.setRecipes(null);
                 showLoading();
                 break;
             default:
@@ -118,7 +130,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void checkInternet() {
-        if (!NetworkUtils.isOnline(this)) {
+        if (NetworkUtils.isOnline(this)) {
+            getSupportLoaderManager().restartLoader(ID_RECIPE_LOADER, null, this);
+            SyncUtils.startImmediateSync(MainActivity.this);
+            if (mSnackbar != null) {
+                mSnackbar.dismiss();
+                mSnackbar = null;
+            }
+        } else {
             showOfflineSnack();
         }
     }
@@ -129,8 +148,7 @@ public class MainActivity extends AppCompatActivity implements
         mSnackbar.setAction(R.string.retry, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SyncUtils.startImmediateSync(MainActivity.this);
-                mSnackbar.dismiss();
+                checkInternet();
             }
         });
         mSnackbar.show();
@@ -147,10 +165,17 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRecipeClick(int recipeId) {
-        Timber.d( "onRecipeClick: " + recipeId);
+    public void onRecipeClick(int recipeIndex) {
+        Timber.d( "onRecipeClick: " + recipeIndex);
         Intent intent = new Intent(this, RecipeActivity.class);
-        intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE_ID, recipeId);
+        intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE, mRecipes.get(recipeIndex));
         startActivity(intent);
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(RECIPE_LIST_KEY, mRecipes);
     }
 }

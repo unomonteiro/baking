@@ -1,40 +1,41 @@
 package io.monteirodev.baking.ui;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.monteirodev.baking.R;
+import io.monteirodev.baking.models.Step;
 
-public class StepDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 
-    private static final int ID_RECIPE_LOADER = 1;
-    private static final int ID_STEP_LOADER = 2;
-    private OnStepChangeListener mListener;
+public class StepDetailFragment extends Fragment {
+
+    private OnStepChangeListener mOnStepChangeListener;
 
     Unbinder unbinder;
     @BindView(R.id.short_description_text_view)
     TextView mShortDescriptionTextView;
-    @BindView(R.id.step_description_text_view)
+    @BindView(R.id.description_text_view)
     TextView mDescriptionTextView;
     @BindView(R.id.previous_button)
     Button mPreviousButton;
     @BindView(R.id.next_button)
     Button mNextButton;
-    private int mStepId;
+    private ArrayList<Step> mSteps;
+    private int mStepIndex;
 
     public StepDetailFragment() {
         // Required empty public constructor
@@ -45,11 +46,7 @@ public class StepDetailFragment extends Fragment implements LoaderManager.Loader
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         unbinder = ButterKnife.bind(this, rootView);
-        mShortDescriptionTextView.setText(String.valueOf(mStepId));
-
-        if (mStepId != 0) {
-            getLoaderManager().initLoader(ID_STEP_LOADER, null, this);
-        }
+        updateStepViews();
         return rootView;
     }
 
@@ -57,7 +54,7 @@ public class StepDetailFragment extends Fragment implements LoaderManager.Loader
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnStepChangeListener) {
-            mListener = (OnStepChangeListener) context;
+            mOnStepChangeListener = (OnStepChangeListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnStepChangeListener");
@@ -67,7 +64,7 @@ public class StepDetailFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mOnStepChangeListener = null;
     }
 
     @Override
@@ -79,66 +76,32 @@ public class StepDetailFragment extends Fragment implements LoaderManager.Loader
         super.onDestroyView();
     }
 
-    public void setStepId(int stepId) {
-        mStepId = stepId;
+    public void setSteps(ArrayList<Step> steps) {
+        mSteps = steps;
     }
 
-    @NonNull
-    @Override
-    public android.support.v4.content.Loader<Cursor> onCreateLoader(int loaderId, @Nullable Bundle args) {
-        switch (loaderId) {
-
-            case ID_RECIPE_LOADER:
-//                return new CursorLoader(this,
-//                        BakingProvider.Recipes.recipeWithId(mRecipeId),
-//                        null,
-//                        null,
-//                        null,
-//                        null);
-                return null;
-
-            case ID_STEP_LOADER:
-                // todo
-//                return new CursorLoader(this,
-//                        BakingProvider.Steps.recipeSteps(mRecipeId),
-//                        STEPS_PROJECTION,
-//                        null,
-//                        null,
-//                        null);
-                return null;
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
+    public void setStepIndex(int stepIndex) {
+        mStepIndex = stepIndex;
     }
 
-    @Override
-    public void onLoadFinished(@NonNull android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-        if (data != null && data.getCount() != 0) {
-            switch (loader.getId()) {
-                case ID_RECIPE_LOADER:
-                    // todo
-                    break;
-                case ID_STEP_LOADER:
-                    // todo
-                    // getLoaderManager().initLoader(ID_RECIPE_LOADER, null, this);
-                    break;
-                default:
-                    throw new RuntimeException("Loader Not Implemented: " + loader.getId());
+    private void updateStepViews() {
+        Context context = getContext();
+        if (context != null && mSteps != null && mSteps.size() > 0 && mStepIndex > -1) {
+            Step step = mSteps.get(mStepIndex);
+            int stepIndex = step.getId();
+            String shortDescription = step.getShortDescription();
+            String description = step.getDescription();
+            boolean isFirst = stepIndex == 0;
+            boolean isLast = stepIndex == mSteps.size() -1;
+
+            mShortDescriptionTextView.setText(shortDescription);
+            if (description.equalsIgnoreCase(shortDescription)) {
+                mDescriptionTextView.setVisibility(INVISIBLE);
+            } else {
+                mDescriptionTextView.setText(description);
             }
-        }
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull android.support.v4.content.Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case ID_RECIPE_LOADER:
-                // todo
-                break;
-            case ID_STEP_LOADER:
-                // todo
-                break;
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loader.getId());
+            mPreviousButton.setVisibility(isFirst ? INVISIBLE : VISIBLE);
+            mNextButton.setVisibility(isLast ? INVISIBLE : VISIBLE);
         }
     }
 
