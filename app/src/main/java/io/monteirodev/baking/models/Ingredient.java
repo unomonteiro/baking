@@ -1,9 +1,16 @@
 package io.monteirodev.baking.models;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
+
+import net.simonvt.schematic.Cursors;
+
+import java.text.DecimalFormat;
+
+import io.monteirodev.baking.database.IngredientColumns;
 
 public class Ingredient implements Parcelable {
 
@@ -18,6 +25,12 @@ public class Ingredient implements Parcelable {
     private String ingredient;
 
     public Ingredient() {
+    }
+
+    public Ingredient(Cursor data) {
+        this.quantity = Cursors.getFloat(data, IngredientColumns.QUANTITY);
+        this.measure = Cursors.getString(data, IngredientColumns.MEASURE);
+        this.ingredient = Cursors.getString(data, IngredientColumns.INGREDIENT);
     }
 
     public Float getQuantity() {

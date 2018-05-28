@@ -1,11 +1,16 @@
 package io.monteirodev.baking.models;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.Expose;
 
+import net.simonvt.schematic.Cursors;
+
 import java.util.ArrayList;
+
+import io.monteirodev.baking.database.RecipeColumns;
 
 public class Recipe implements Parcelable {
 
@@ -29,6 +34,13 @@ public class Recipe implements Parcelable {
     private String image;
 
     public Recipe() {
+    }
+
+    public Recipe(Cursor data) {
+        this.id = Cursors.getInt(data, RecipeColumns.ID);
+        this.name = Cursors.getString(data, RecipeColumns.NAME);
+        this.servings = Cursors.getInt(data, RecipeColumns.SERVINGS);
+        this.image = Cursors.getString(data, RecipeColumns.IMAGE);
     }
 
     public Integer getId() {
@@ -93,11 +105,13 @@ public class Recipe implements Parcelable {
             dest.writeInt(id);
         }
         dest.writeString(name);
+        dest.writeTypedList(ingredients);
+        dest.writeTypedList(steps);
         if (servings == null) {
             dest.writeByte((byte) 0);
         } else {
             dest.writeByte((byte) 1);
-        dest.writeInt(servings);
+            dest.writeInt(servings);
         }
         dest.writeString(image);
     }
@@ -109,10 +123,12 @@ public class Recipe implements Parcelable {
             id = in.readInt();
         }
         name = in.readString();
+        ingredients = in.createTypedArrayList(Ingredient.CREATOR);
+        steps = in.createTypedArrayList(Step.CREATOR);
         if (in.readByte() == 0) {
             servings = null;
         } else {
-        servings = in.readInt();
+            servings = in.readInt();
         }
         image = in.readString();
     }
@@ -128,5 +144,4 @@ public class Recipe implements Parcelable {
             return new Recipe[size];
         }
     };
-
 }

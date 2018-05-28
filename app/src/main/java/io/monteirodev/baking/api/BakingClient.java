@@ -18,7 +18,7 @@ public class BakingClient {
     public static Retrofit getClient() {
         if (retrofit == null) {
             Gson gson = new GsonBuilder()
-                    .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
+                    .setFieldNamingPolicy(IDENTITY)
                     .create();
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)

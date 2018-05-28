@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.RecipeActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recipe_details_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:listitem="@layout/recipe_detail_ingredients_item"
+        tools:spanCount="1" />
+
+    <View
+        android:id="@+id/small_divider"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/darker_gray"/>
+
+    <FrameLayout
+        android:id="@+id/step_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5" />
+
+</LinearLayout>

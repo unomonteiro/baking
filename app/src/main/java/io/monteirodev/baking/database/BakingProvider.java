@@ -57,29 +57,16 @@ public class BakingProvider {
                 defaultSort = RecipeColumns.ID + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.RECIPES);
 
-//        static final String INGREDIENT_COUNT = "(SELECT COUNT(*) FROM "
-//                + INGREDIENTS
-//                + " WHERE "
-//                + INGREDIENTS
-//                + "."
-//                + RECIPE_ID
-//                + "="
-//                + RECIPES
-//                + "."
-//                + RecipeColumns._ID
-//                + ")";
-//
-//        static final String STEP_COUNT = "(SELECT COUNT(*) FROM "
-//                + STEPS
-//                + " WHERE "
-//                + STEPS
-//                + "."
-//                + RECIPE_ID
-//                + "="
-//                + RECIPES
-//                + "."
-//                + RecipeColumns._ID
-//                + ")";
+        @InexactContentUri(
+                path = Path.RECIPES + "/#",
+                name = "recipe_id",
+                type = Type.RECIPES,
+                whereColumn = RecipeColumns.ID,
+                pathSegment = 1
+        )
+        public static Uri withId(int id) {
+            return buildUri(Path.RECIPES, String.valueOf(id));
+        }
     }
 
     @TableEndpoint(table = BakingDatabase.Tables.INGREDIENTS)
@@ -112,13 +99,24 @@ public class BakingProvider {
 
         @InexactContentUri(
                 path = Path.STEPS + "/#",
+                name = "step_id",
+                type = Type.STEPS,
+                whereColumn = StepColumns.ID,
+                pathSegment = 1
+        )
+        public static Uri stepWithId(int id) {
+            return buildUri(Path.STEPS, String.valueOf(id));
+        }
+
+        @InexactContentUri(
+                path = Path.RECIPES + "/#/" + Path.STEPS,
                 name = "recipe_steps",
                 type = Type.STEPS,
                 whereColumn = StepColumns.RECIPE_ID,
                 pathSegment = 1
         )
         public static Uri recipeSteps(long id) {
-            return buildUri(Path.STEPS, String.valueOf(id));
+            return buildUri(Path.RECIPES, String.valueOf(id), Path.STEPS);
         }
     }
 

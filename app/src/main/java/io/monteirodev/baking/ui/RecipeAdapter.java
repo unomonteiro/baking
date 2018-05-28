@@ -1,6 +1,5 @@
-package io.monteirodev.baking;
+package io.monteirodev.baking.ui;
 
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,14 +10,17 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.monteirodev.baking.database.RecipeColumns;
+import io.monteirodev.baking.R;
+import io.monteirodev.baking.models.Recipe;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
 
     private final RecipeClickListener mClickListener;
-    private Cursor mCursor;
+    private List<Recipe> mRecipes;
 
     public RecipeAdapter(RecipeClickListener clickListener) {
         mClickListener = clickListener;
@@ -34,39 +36,40 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        if (mCursor == null || !mCursor.moveToPosition(position)) return;
+        Recipe recipe = mRecipes.get(position);
 
-        String name = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.NAME));
-        holder.recipeName.setText(name);
-        String imageUrl = mCursor.getString(mCursor.getColumnIndex(RecipeColumns.IMAGE));
+        holder.itemView.setTag(position);
+        holder.recipeName.setText(recipe.getName());
+        String imageUrl = recipe.getImage();
+        // for image testing
+//        if (position == 1) {
+//            //imageUrl = "http://www.brickcitybears.com/wp-content/uploads/2018/04/2527-best-squirrels-images-on-pinterest.jpg";
+//            imageUrl = "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg";
+//        }
         if (imageUrl.isEmpty()) {
-            holder.recipeImage.setImageResource(R.drawable.ic_cupcake);
+            holder.recipeImage.setVisibility(View.GONE);
         } else {
             Picasso.with(holder.recipeImage.getContext())
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_cupcake)
-                    .fit()
-                    .centerCrop()
-                    .error(R.drawable.ic_cupcake)
                     .into(holder.recipeImage);
         }
     }
 
     @Override
     public int getItemCount() {
-        if (null == mCursor) {
+        if (null == mRecipes) {
             return 0;
         }
-        return mCursor.getCount();
+        return mRecipes.size();
     }
 
-    public void swapCursor(Cursor newCursor) {
-        mCursor = newCursor;
+    public void setRecipes(List<Recipe> newRecipes) {
+        mRecipes = newRecipes;
         notifyDataSetChanged();
     }
 
     public interface RecipeClickListener {
-        void onRecipeClick(int recipeId);
+        void onRecipeClick(int recipeIndex);
     }
 
     public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -75,18 +78,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         @BindView(R.id.recipe_item_image_view)
         ImageView recipeImage;
 
-
-        public RecipeViewHolder(View itemView) {
+        RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int recipeId = mCursor.getInt(mCursor.getColumnIndex(RecipeColumns.ID));
-            mClickListener.onRecipeClick(recipeId);
+            int recipeIndex = (int) v.getTag();
+            mClickListener.onRecipeClick(recipeIndex);
         }
     }
 
