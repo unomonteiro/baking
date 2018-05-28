@@ -2,6 +2,7 @@ package io.monteirodev.baking.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,6 +39,8 @@ import io.monteirodev.baking.R;
 import io.monteirodev.baking.models.Step;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -110,7 +113,6 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        hideSystemUi();
         if (mPlayer != null) {
             if (mPlayerPosition != C.TIME_UNSET) {
                 mPlayer.seekTo(mPlayerPosition);
@@ -199,23 +201,43 @@ public class StepDetailFragment extends Fragment {
             boolean isLastStep = mStepIndex == mSteps.size() -1;
 
             mShortDescriptionTextView.setText(shortDescription);
-            if (description.equalsIgnoreCase(shortDescription)) {
-                mDescriptionTextView.setVisibility(INVISIBLE);
-            } else {
-                mDescriptionTextView.setVisibility(VISIBLE);
-                mDescriptionTextView.setText(description);
+            mDescriptionTextView.setText(description);
+            boolean showDescription = description.equalsIgnoreCase(shortDescription);
+
+            Resources resources = context.getResources();
+            boolean isTablet = resources.getBoolean(R.bool.is_tablet);
+            int orientation = resources.getConfiguration().orientation;
+            if (isTablet) {
+                mDescriptionTextView.setVisibility(showDescription ? INVISIBLE : VISIBLE);
+                mPreviousButton.setVisibility(GONE);
+                mNextButton.setVisibility(GONE);
+            } else if (orientation == ORIENTATION_LANDSCAPE) {
+                if (mVideoURL.isEmpty()) {
+                    mPlayerView.setVisibility(GONE);
+                    mThumbnailImageView.setVisibility(GONE);
+                    mShortDescriptionTextView.setVisibility(VISIBLE);
+                    mDescriptionTextView.setVisibility(showDescription ? INVISIBLE : VISIBLE);
+                    mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
+                    mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
+                } else {
+                    mPlayerView.setVisibility(View.VISIBLE);
+                    mThumbnailImageView.setVisibility(GONE);
+                    mShortDescriptionTextView.setVisibility(GONE);
+                    mDescriptionTextView.setVisibility(GONE);
+                    mPreviousButton.setVisibility(GONE);
+                    mNextButton.setVisibility(GONE);
+                    hideSystemUi();
+                }
             }
-            mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
-            mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
         }
     }
 
     private void initializePlayer() {
-        if (mVideoURL == null || mVideoURL.isEmpty()) {
-            mThumbnailImageView.setVisibility(VISIBLE);
-            mPlayerView.setVisibility(INVISIBLE);
-            return;
-        }
+//        if (mVideoURL == null || mVideoURL.isEmpty()) {
+//            mThumbnailImageView.setVisibility(VISIBLE);
+//            mPlayerView.setVisibility(INVISIBLE);
+//            return;
+//        }
         if (mPlayer == null) {
             mPlayer = ExoPlayerFactory.newSimpleInstance(
                     new DefaultRenderersFactory(getContext()),
@@ -229,8 +251,6 @@ public class StepDetailFragment extends Fragment {
             MediaSource mediaSource = buildMediaSource(Uri.parse(mVideoURL));
             mPlayer.prepare(mediaSource);
         }
-        mThumbnailImageView.setVisibility(INVISIBLE);
-        mPlayerView.setVisibility(VISIBLE);
     }
 
     private MediaSource buildMediaSource(Uri uri) {
@@ -241,17 +261,12 @@ public class StepDetailFragment extends Fragment {
 
     @SuppressLint("InlinedApi")
     private void hideSystemUi() {
-        // todo
-        FragmentActivity activity = getActivity();
-        if (activity != null && activity.getResources().getConfiguration()
-                .orientation == ORIENTATION_LANDSCAPE) {
-            mPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
+        mPlayerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     private void releasePlayer() {
