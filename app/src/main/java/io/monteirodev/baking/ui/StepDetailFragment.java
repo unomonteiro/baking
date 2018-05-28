@@ -52,8 +52,8 @@ public class StepDetailFragment extends Fragment {
     private OnStepChangeListener mOnStepChangeListener;
 
     Unbinder unbinder;
-    @BindView(R.id.thumbnail_url_image_view)
-    ImageView mThumbnailImageView;
+    @BindView(R.id.video_placeholder)
+    TextView mThumbnailImageView;
     @BindView(R.id.video_view)
     PlayerView mPlayerView;
     @BindView(R.id.short_description_text_view)
@@ -215,7 +215,8 @@ public class StepDetailFragment extends Fragment {
         int orientation = resources.getConfiguration().orientation;
 
         if (isTablet) {
-            mThumbnailImageView.setVisibility(INVISIBLE);
+            mThumbnailImageView.setVisibility(mVideoURL.isEmpty() ? VISIBLE : INVISIBLE);
+            mPlayerView.setVisibility(mVideoURL.isEmpty() ? INVISIBLE : VISIBLE);
             mShortDescriptionTextView.setVisibility(GONE);
             mPreviousButton.setVisibility(GONE);
             mNextButton.setVisibility(GONE);
