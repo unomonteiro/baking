@@ -26,7 +26,8 @@ import io.monteirodev.baking.models.Step;
 import timber.log.Timber;
 
 public class RecipeActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>, RecipeDetailsAdapter.StepClickListener {
+        LoaderManager.LoaderCallbacks<Cursor>, RecipeDetailsAdapter.StepClickListener,
+        StepDetailFragment.OnStepChangeListener {
 
     private static final String RECIPE_KEY = "recipe_key";
     private static final int ID_INGREDIENTS_LOADER = 2;
@@ -35,8 +36,6 @@ public class RecipeActivity extends AppCompatActivity implements
     public static final String INTENT_EXTRA_RECIPE = "intent_extra_recipe";
     public static final String INTENT_EXTRA_STEP_INDEX = "intent_extra_step_id";
 
-
-
     @BindView(R.id.recipe_details_recycler_view)
     RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -44,12 +43,16 @@ public class RecipeActivity extends AppCompatActivity implements
     private LinearLayoutManager mLayoutManager;
     private RecipeDetailsAdapter mRecipeDetailsAdapter;
     private Recipe mRecipe;
+    private int mStepIndex = 0;
+    private boolean mIsTablet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
         ButterKnife.bind(this);
+
+        mIsTablet = getResources().getBoolean(R.bool.is_tablet);
 
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(INTENT_EXTRA_RECIPE)) {
@@ -74,11 +77,35 @@ public class RecipeActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             getSupportLoaderManager().restartLoader(ID_INGREDIENTS_LOADER, null, this);
             getSupportLoaderManager().restartLoader(ID_STEPS_LOADER, null, this);
+            if (mIsTablet) {
+                addStepDetailFragment(mRecipe.getSteps(), mStepIndex);
+            }
         } else {
             mRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
             mRecipeDetailsAdapter.setIngredients(mRecipe.getIngredients());
             mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
+            if (mIsTablet) {
+                replaceStepDetailFragment(mRecipe.getSteps(), mStepIndex);
+            }
         }
+    }
+
+    private void addStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
+        StepDetailFragment stepDetailFragment = new StepDetailFragment();
+        stepDetailFragment.setSteps(steps);
+        stepDetailFragment.setStepIndex(stepIndex);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.step_container, stepDetailFragment)
+                .commit();
+    }
+
+    private void replaceStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
+        StepDetailFragment stepDetailFragment = new StepDetailFragment();
+        stepDetailFragment.setSteps(steps);
+        stepDetailFragment.setStepIndex(stepIndex);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.step_container, stepDetailFragment)
+                .commit();
     }
 
     @NonNull
@@ -125,6 +152,9 @@ public class RecipeActivity extends AppCompatActivity implements
                         }
                         mRecipe.setSteps(steps);
                         mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
+                        if (mIsTablet) {
+                            replaceStepDetailFragment(mRecipe.getSteps(), 0);
+                        }
                     }
                     break;
                 default:
@@ -149,11 +179,19 @@ public class RecipeActivity extends AppCompatActivity implements
 
     @Override
     public void onStepClick(int stepIndex) {
-        Timber.d("Step clicked: " + stepIndex);
-        Intent intent = new Intent(this, StepDetailActivity.class);
-        intent.putExtra(INTENT_EXTRA_RECIPE, mRecipe);
-        intent.putExtra(INTENT_EXTRA_STEP_INDEX, stepIndex);
-        startActivity(intent);
+        if (mIsTablet) {
+            replaceStepDetailFragment(mRecipe.getSteps(), stepIndex);
+        } else {
+            Intent intent = new Intent(this, StepDetailActivity.class);
+            intent.putExtra(INTENT_EXTRA_RECIPE, mRecipe);
+            intent.putExtra(INTENT_EXTRA_STEP_INDEX, stepIndex);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onStepChange(int stepIndex) {
+        Timber.d("onStepChange() stepIndex " + stepIndex);
     }
 
     @Override

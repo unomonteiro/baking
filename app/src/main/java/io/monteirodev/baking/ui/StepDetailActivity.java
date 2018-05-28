@@ -44,15 +44,14 @@ public class StepDetailActivity extends AppCompatActivity implements StepDetailF
             StepDetailFragment stepDetailFragment = new StepDetailFragment();
             stepDetailFragment.setSteps(mRecipe.getSteps());
             stepDetailFragment.setStepIndex(mStepIndex);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                     .add(R.id.step_container, stepDetailFragment)
                     .commit();
         }
     }
 
     @Override
-    public void onStepChange(Uri uri) {
-        Timber.d("on");
+    public void onStepChange(int stepIndex) {
+        Timber.d("onStepChange() stepIndex " + stepIndex);
     }
 }

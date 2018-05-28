@@ -10,8 +10,10 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.facebook.stetho.Stetho;
@@ -35,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @BindView(R.id.recipes_recycler_view)
     RecyclerView mRecyclerView;
-    private int mPosition = RecyclerView.NO_POSITION;
     @BindView(R.id.loading_view)
     View mLoadingView;
 
@@ -58,8 +59,11 @@ public class MainActivity extends AppCompatActivity implements
                         .build());
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        boolean isTablet = getResources().getBoolean(R.bool.is_tablet);
+
+        mRecyclerView.setLayoutManager(getDeviceLayoutManager(isTablet));
+
         mRecipeAdapter = new RecipeAdapter(this);
         mRecyclerView.setAdapter(mRecipeAdapter);
         mRecyclerView.setHasFixedSize(true);
@@ -74,6 +78,17 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         SyncUtils.initialise(this);
+    }
+
+    private LinearLayoutManager getDeviceLayoutManager(boolean isTablet) {
+        if (isTablet) {
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+            int numColumns = (int) (dpWidth / 200);
+            return new GridLayoutManager(this, numColumns);
+        } else {
+            return new LinearLayoutManager(this);
+        }
     }
 
     @Override

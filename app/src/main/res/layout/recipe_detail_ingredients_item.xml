@@ -30,8 +30,7 @@
                 android:id="@+id/ingredient_list_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:text="- 9999 gram units melted and cooled bittersweet or semisweet chocolate\n- 9999 gram units melted and cooled bittersweet or semisweet chocolate\n- 9999 gram units melted and cooled bittersweet or semisweet chocolate\n- 9999 gram units melted and cooled bittersweet or semisweet chocolate\n- 9999 gram units melted and cooled bittersweet or semisweet chocolate"
-                style="@style/Base.TextAppearance.AppCompat.Small"/>
+                tools:text="@string/small_cupcake_ipsum"/>
 
         </LinearLayout>
 

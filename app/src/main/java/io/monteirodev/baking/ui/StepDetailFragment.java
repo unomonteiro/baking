@@ -204,30 +204,45 @@ public class StepDetailFragment extends Fragment {
             mDescriptionTextView.setText(description);
             boolean showDescription = description.equalsIgnoreCase(shortDescription);
 
-            Resources resources = context.getResources();
-            boolean isTablet = resources.getBoolean(R.bool.is_tablet);
-            int orientation = resources.getConfiguration().orientation;
-            if (isTablet) {
+            handleVisibilities(context, isFirstStep, isLastStep, showDescription);
+        }
+    }
+
+    private void handleVisibilities(@NonNull Context context, boolean isFirstStep,
+                                    boolean isLastStep, boolean showDescription) {
+        Resources resources = context.getResources();
+        boolean isTablet = resources.getBoolean(R.bool.is_tablet);
+        int orientation = resources.getConfiguration().orientation;
+
+        if (isTablet) {
+            mThumbnailImageView.setVisibility(INVISIBLE);
+            mShortDescriptionTextView.setVisibility(GONE);
+            mPreviousButton.setVisibility(GONE);
+            mNextButton.setVisibility(GONE);
+        } else if (orientation == ORIENTATION_LANDSCAPE) {
+            if (mVideoURL.isEmpty()) {
+                mPlayerView.setVisibility(GONE);
+                mThumbnailImageView.setVisibility(GONE);
+                mShortDescriptionTextView.setVisibility(VISIBLE);
                 mDescriptionTextView.setVisibility(showDescription ? INVISIBLE : VISIBLE);
+                mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
+                mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
+            } else {
+                mPlayerView.setVisibility(View.VISIBLE);
+                mThumbnailImageView.setVisibility(GONE);
+                mShortDescriptionTextView.setVisibility(GONE);
+                mDescriptionTextView.setVisibility(GONE);
                 mPreviousButton.setVisibility(GONE);
                 mNextButton.setVisibility(GONE);
-            } else if (orientation == ORIENTATION_LANDSCAPE) {
-                if (mVideoURL.isEmpty()) {
-                    mPlayerView.setVisibility(GONE);
-                    mThumbnailImageView.setVisibility(GONE);
-                    mShortDescriptionTextView.setVisibility(VISIBLE);
-                    mDescriptionTextView.setVisibility(showDescription ? INVISIBLE : VISIBLE);
-                    mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
-                    mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
-                } else {
-                    mPlayerView.setVisibility(View.VISIBLE);
-                    mThumbnailImageView.setVisibility(GONE);
-                    mShortDescriptionTextView.setVisibility(GONE);
-                    mDescriptionTextView.setVisibility(GONE);
-                    mPreviousButton.setVisibility(GONE);
-                    mNextButton.setVisibility(GONE);
-                    hideSystemUi();
-                }
+                hideSystemUi();
+            }
+        } else if (orientation == ORIENTATION_PORTRAIT) {
+            if (mVideoURL.isEmpty()) {
+                mPlayerView.setVisibility(INVISIBLE);
+                mThumbnailImageView.setVisibility(VISIBLE);
+            } else {
+                mPlayerView.setVisibility(VISIBLE);
+                mThumbnailImageView.setVisibility(INVISIBLE);
             }
         }
     }
@@ -238,7 +253,7 @@ public class StepDetailFragment extends Fragment {
 //            mPlayerView.setVisibility(INVISIBLE);
 //            return;
 //        }
-        if (mPlayer == null) {
+        if (mPlayer == null && mVideoURL != null && !mVideoURL.isEmpty()) {
             mPlayer = ExoPlayerFactory.newSimpleInstance(
                     new DefaultRenderersFactory(getContext()),
                     new DefaultTrackSelector(
@@ -278,6 +293,6 @@ public class StepDetailFragment extends Fragment {
     }
 
     public interface OnStepChangeListener {
-        void onStepChange(Uri uri);
+        void onStepChange(int stepIndex);
     }
 }
