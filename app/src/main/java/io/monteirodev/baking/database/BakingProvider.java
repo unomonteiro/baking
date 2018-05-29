@@ -45,7 +45,7 @@ public class BakingProvider {
         @ContentUri(
                 path = Path.RECIPES,
                 type = Type.RECIPES,
-                defaultSort = RecipeColumns.ID + " ASC")
+                defaultSort = RecipeColumns.NAME + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.RECIPES);
 
         @InexactContentUri(
