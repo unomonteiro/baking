@@ -7,7 +7,7 @@
 
     <string name="quantity_measure_ingredient">- &lt;b>%1$s %2$s&lt;/b> %3$s</string>
     <string name="number_step">%1$d. %2$s</string>
-    
+
     <string name="video_not_available">Video not available!</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
@@ -16,5 +16,7 @@
     <string name="detail_error_message">Oops, bad recipe!</string>
     <string name="enter_fullscreen">enter fullscreen</string>
     <string name="small_cupcake_ipsum">Cupcake ipsum dolor sit amet I love jujubes. Muffin jelly lollipop tiramisu pie caramels. Sugar plum soufflé I love caramels soufflé cupcake jelly-o. Fruitcake dessert bonbon candy I love pastry tootsie roll I love jujubes. Marzipan lemon drops topping. Donut marshmallow sweet. Pie pudding cake soufflé chupa chups.</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 
 </resources>
