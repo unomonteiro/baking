@@ -18,5 +18,6 @@
     <string name="small_cupcake_ipsum">Cupcake ipsum dolor sit amet I love jujubes. Muffin jelly lollipop tiramisu pie caramels. Sugar plum soufflé I love caramels soufflé cupcake jelly-o. Fruitcake dessert bonbon candy I love pastry tootsie roll I love jujubes. Marzipan lemon drops topping. Donut marshmallow sweet. Pie pudding cake soufflé chupa chups.</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="tap_for_recipe">Tap me to open Baking Time and then select a recipe</string>
 
 </resources>

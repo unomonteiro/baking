@@ -25,6 +25,7 @@ public class IngredientsWidget extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients);
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.widget_title_layout, pendingIntent);
         views.setOnClickPendingIntent(R.id.widget_layout_main, pendingIntent);
 
         setRemoteAdapter(context, views);
