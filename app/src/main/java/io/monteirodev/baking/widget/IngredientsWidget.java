@@ -1,6 +1,7 @@
 package io.monteirodev.baking.widget;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.widget.RemoteViews;
 
 import io.monteirodev.baking.R;
+import io.monteirodev.baking.ui.MainActivity;
 
 /**
  * Implementation of App Widget functionality.
@@ -20,7 +22,10 @@ public class IngredientsWidget extends AppWidgetProvider {
                                 int appWidgetId) {
 
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients);
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        views.setOnClickPendingIntent(R.id.widget_layout_main, pendingIntent);
 
         setRemoteAdapter(context, views);
 

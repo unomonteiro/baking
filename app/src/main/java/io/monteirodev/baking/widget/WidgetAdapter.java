@@ -17,9 +17,9 @@ public class WidgetAdapter implements RemoteViewsService.RemoteViewsFactory {
 
     private void initData() {
         mIngredientList.clear();
-        for (int i = 1; i < 10; i++) {
-            mIngredientList.add("Item " + i);
-        }
+//        for (int i = 1; i < 10; i++) {
+//            mIngredientList.add("Item " + i);
+//        }
     }
 
     public WidgetAdapter(Context context, Intent intent) {
