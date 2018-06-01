@@ -1,8 +1,10 @@
 package io.monteirodev.baking.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -27,6 +29,8 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.sync.SyncUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
+import io.monteirodev.baking.widget.BakingWidget;
+import io.monteirodev.baking.widget.WidgetIntentService;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements
@@ -34,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int ID_RECIPE_LOADER = 1;
     private static final String RECIPE_LIST_KEY = "recipe_list_key";
+    public static final String RECIPE_ID_KEY = "recipe_id_key";
+    public static final int INVALID_RECIPE_ID = -1;
 
     @BindView(R.id.recipes_recycler_view)
     RecyclerView mRecyclerView;
@@ -125,6 +131,8 @@ public class MainActivity extends AppCompatActivity implements
                     mRecipes = recipes;
                     mRecipeAdapter.setRecipes(mRecipes);
                     showRecipeList();
+                    WidgetIntentService.startActionUpdateSelectedRecipe(this,
+                            INVALID_RECIPE_ID, null);
                 }
                 break;
             default:
@@ -182,6 +190,13 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRecipeClick(int recipeIndex) {
         Timber.d( "onRecipeClick: " + recipeIndex);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putInt(RECIPE_ID_KEY, recipeIndex)
+                .apply();
+        WidgetIntentService.startActionUpdateSelectedRecipe(this,
+                recipeIndex,
+                mRecipes.get(recipeIndex).getName());
         Intent intent = new Intent(this, RecipeActivity.class);
         intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE, mRecipes.get(recipeIndex));
         startActivity(intent);

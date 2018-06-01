@@ -1,22 +1,25 @@
 package io.monteirodev.baking.widget;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.support.annotation.NonNull;
+import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.ui.MainActivity;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
+import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
+
 /**
  * Implementation of App Widget functionality.
  */
-public class IngredientsWidget extends AppWidgetProvider {
+public class BakingWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
@@ -27,13 +30,19 @@ public class IngredientsWidget extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
         views.setOnClickPendingIntent(R.id.widget_title_layout, pendingIntent);
         views.setOnClickPendingIntent(R.id.widget_layout_main, pendingIntent);
-
-        setRemoteAdapter(context, views);
+        views.setViewVisibility(R.id.widget_invalid_recipe_text, GONE);
+        views.setViewVisibility(R.id.widget_list, VISIBLE);
+        int recipeId = PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(RECIPE_ID_KEY, INVALID_RECIPE_ID);
+        views.setRemoteAdapter(R.id.widget_list,
+                new Intent(context, WidgetViewsService.class));
+        views.setEmptyView(R.id.widget_list, R.id.widget_invalid_recipe_text);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
+    // todo the entry point
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
@@ -50,17 +59,6 @@ public class IngredientsWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
-    }
-
-    /**
-     * Sets the remote adapter used to fill in the list items
-     *
-     * @param views RemoteViews to set the RemoteAdapter
-     */
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private static void setRemoteAdapter(Context context, @NonNull final RemoteViews views) {
-        views.setRemoteAdapter(R.id.widget_list,
-                new Intent(context, WidgetService.class));
     }
 
 }
