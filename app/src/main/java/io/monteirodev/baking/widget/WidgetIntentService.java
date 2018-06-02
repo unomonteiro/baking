@@ -40,10 +40,11 @@ public class WidgetIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_UPDATE_SELECTED_RECIPE.equals(action)) {
-                if (intent.hasExtra(RECIPE_ID_KEY)) {
+                int intExtraRecipeId = intent.getIntExtra(RECIPE_ID_KEY, INVALID_RECIPE_ID);
+                if (intExtraRecipeId != INVALID_RECIPE_ID) {
                     PreferenceManager.getDefaultSharedPreferences(this)
                             .edit()
-                            .putInt(RECIPE_ID_KEY, intent.getIntExtra(RECIPE_ID_KEY, INVALID_RECIPE_ID))
+                            .putInt(RECIPE_ID_KEY, intExtraRecipeId)
                             .apply();
                 }
                 handleActionUpdateSelectedRecipe();
