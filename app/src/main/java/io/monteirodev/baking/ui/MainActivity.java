@@ -3,6 +3,7 @@ package io.monteirodev.baking.ui;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -24,9 +25,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.database.BakingProvider;
+import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.sync.SyncUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
+import io.monteirodev.baking.widget.WidgetIntentService;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final int ID_RECIPE_LOADER = 1;
     private static final String RECIPE_LIST_KEY = "recipe_list_key";
+    public static final String RECIPE_ID_KEY = "recipe_id_key";
+    public static final int INVALID_RECIPE_ID = -1;
 
     @BindView(R.id.recipes_recycler_view)
     RecyclerView mRecyclerView;
@@ -101,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
                         null,
                         null,
                         null,
-                        null);
+                        RecipeColumns.NAME);
 
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
@@ -125,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements
                     mRecipes = recipes;
                     mRecipeAdapter.setRecipes(mRecipes);
                     showRecipeList();
+                    WidgetIntentService.startActionUpdateSelectedRecipe(this);
                 }
                 break;
             default:
@@ -180,13 +186,17 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onRecipeClick(int recipeIndex) {
-        Timber.d( "onRecipeClick: " + recipeIndex);
+    public void onRecipeClick(Recipe recipe) {
+        Timber.d( "onRecipeClick: " + recipe);
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putInt(RECIPE_ID_KEY, recipe.getId())
+                .apply();
+        WidgetIntentService.startActionUpdateSelectedRecipe(this);
         Intent intent = new Intent(this, RecipeActivity.class);
-        intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE, mRecipes.get(recipeIndex));
+        intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE, recipe);
         startActivity(intent);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

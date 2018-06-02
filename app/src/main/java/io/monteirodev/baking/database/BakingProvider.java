@@ -48,6 +48,16 @@ public class BakingProvider {
                 defaultSort = RecipeColumns.ID + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.RECIPES);
 
+        @InexactContentUri(
+                path = Path.RECIPES + "/#",
+                name = "recipe_id",
+                type = Type.RECIPES,
+                whereColumn = RecipeColumns.ID,
+                pathSegment = 1
+        )
+        public static Uri withId(int id) {
+            return buildUri(Path.RECIPES, String.valueOf(id));
+        }
     }
 
     @TableEndpoint(table = BakingDatabase.Tables.INGREDIENTS)
