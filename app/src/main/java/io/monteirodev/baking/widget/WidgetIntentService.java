@@ -23,9 +23,7 @@ import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
  * helper methods.
  */
 public class WidgetIntentService extends IntentService {
-    private static final String ACTION_UPDATE_SELECTED_RECIPE = "io.monteirodev.baking.widget.action.update_selected_recipe";
-
-    private static final String EXTRA_RECIPE_NAME = "io.monteirodev.baking.widget.extra.RECIPE_NAME";
+    static final String ACTION_UPDATE_SELECTED_RECIPE = "io.monteirodev.baking.widget.action.update_selected_recipe";
 
     public WidgetIntentService() {
         super("WidgetIntentService");
@@ -42,6 +40,12 @@ public class WidgetIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_UPDATE_SELECTED_RECIPE.equals(action)) {
+                if (intent.hasExtra(RECIPE_ID_KEY)) {
+                    PreferenceManager.getDefaultSharedPreferences(this)
+                            .edit()
+                            .putInt(RECIPE_ID_KEY, intent.getIntExtra(RECIPE_ID_KEY, INVALID_RECIPE_ID))
+                            .apply();
+                }
                 handleActionUpdateSelectedRecipe();
             }
         }

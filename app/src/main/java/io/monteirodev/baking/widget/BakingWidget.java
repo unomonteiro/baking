@@ -29,14 +29,25 @@ public class BakingWidget extends AppWidgetProvider {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients);
-        Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.widget_title_layout, pendingIntent);
-        views.setOnClickPendingIntent(R.id.widget_layout_main, pendingIntent);
+        Intent appIntent = new Intent(context, MainActivity.class);
+        PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, 0);
+        String title = context.getString(R.string.app_name_small);
+        if (recipeName != null && !recipeName.isEmpty()) {
+            title = recipeName;
+        }
+        views.setTextViewText(R.id.widget_title_text, title);
+        views.setOnClickPendingIntent(R.id.widget_title_layout, appPendingIntent);
+        views.setOnClickPendingIntent(R.id.widget_layout_main, appPendingIntent);
+        //views.setOnClickPendingIntent(R.id.widget_list, appPendingIntent);
         views.setViewVisibility(R.id.widget_invalid_recipe_text, GONE);
         views.setViewVisibility(R.id.widget_list, VISIBLE);
-        int recipeId = PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(RECIPE_ID_KEY, INVALID_RECIPE_ID);
+
+
+        // Add the wateringservice click handler
+        Intent selectIntent = new Intent(context, WidgetIntentService.class);
+        selectIntent.setAction(WidgetIntentService.ACTION_UPDATE_SELECTED_RECIPE);
+        PendingIntent selectPendingIntent = PendingIntent.getService(context, 0, selectIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setPendingIntentTemplate(R.id.widget_list, selectPendingIntent);
         views.setRemoteAdapter(R.id.widget_list,
                 new Intent(context, WidgetViewsService.class));
         views.setEmptyView(R.id.widget_list, R.id.widget_invalid_recipe_text);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -104,6 +105,13 @@ class WidgetRecipeAdapter implements RemoteViewsService.RemoteViewsFactory {
                     android.R.layout.simple_list_item_1);
             remoteView.setTextViewText(android.R.id.text1, mRecipes.get(position).getName());
             remoteView.setTextColor(android.R.id.text1, Color.BLACK);
+
+            Bundle extras = new Bundle();
+            extras.putInt(RECIPE_ID_KEY, mRecipes.get(position).getId());
+            Intent fillInIntent = new Intent();
+            fillInIntent.putExtras(extras);
+            remoteView.setOnClickFillInIntent(android.R.id.text1, fillInIntent);
+
         } else {
             if (mIngredients == null || mIngredients.size() == 0) {
                 return null;

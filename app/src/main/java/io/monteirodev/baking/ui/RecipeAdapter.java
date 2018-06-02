@@ -35,12 +35,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
-        Recipe recipe = mRecipes.get(position);
-
-        holder.itemView.setTag(position);
-        holder.recipeName.setText(recipe.getName());
-        String imageUrl = recipe.getImage();
+    public void onBindViewHolder(@NonNull final RecipeViewHolder holder, int position) {
+        holder.recipe = mRecipes.get(position);
+        holder.itemView.setTag(holder.recipe.getId());
+        holder.recipeName.setText(holder.recipe.getName());
+        String imageUrl = holder.recipe.getImage();
         // for image testing
 //        if (position == 1) {
 //            //imageUrl = "http://www.brickcitybears.com/wp-content/uploads/2018/04/2527-best-squirrels-images-on-pinterest.jpg";
@@ -53,6 +52,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                     .load(imageUrl)
                     .into(holder.recipeImage);
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickListener.onRecipeClick(holder.recipe);
+            }
+        });
     }
 
     @Override
@@ -69,25 +74,19 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
     public interface RecipeClickListener {
-        void onRecipeClick(int recipeIndex);
+        void onRecipeClick(Recipe recipe);
     }
 
-    public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class RecipeViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.recipe_item_name_text_view)
         TextView recipeName;
         @BindView(R.id.recipe_item_image_view)
         ImageView recipeImage;
+        public Recipe recipe;
 
         RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int recipeIndex = (int) v.getTag();
-            mClickListener.onRecipeClick(recipeIndex);
         }
     }
 
