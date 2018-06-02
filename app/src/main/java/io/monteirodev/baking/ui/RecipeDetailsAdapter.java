@@ -82,17 +82,23 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
             case STEP_VIEW_TYPE: {
                 StepViewHolder stepViewHolder = (StepViewHolder) holder;
-                int adjustedPosition = position + (hasIngredientList() ? -1 : 0);
-                Step step = mSteps.get(adjustedPosition);
+                final int adjustedPosition = position + (hasIngredientList() ? -1 : 0);
+                stepViewHolder.itemView.setTag(adjustedPosition);
 
+                Step step = mSteps.get(adjustedPosition);
                 int stepOrder = step.getId();
-                stepViewHolder.itemView.setTag(stepOrder);
                 String shortDescription = step.getShortDescription();
                 String stepText = shortDescription;
                 if (stepOrder > 0) {
                     stepText = context.getString(R.string.number_step, stepOrder, shortDescription);
                 }
                 stepViewHolder.mStepTextView.setText(stepText);
+                stepViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mStepClickListener.onStepClick((Integer) v.getTag());
+                    }
+                });
 
                 break;
             }
@@ -187,20 +193,13 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class StepViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.recipe_step_text_view)
         TextView mStepTextView;
 
         StepViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int stepIndex = (int) v.getTag();
-            mStepClickListener.onStepClick(stepIndex);
         }
     }
 }
