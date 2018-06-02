@@ -42,15 +42,6 @@ public class BakingProvider {
     @TableEndpoint(table = BakingDatabase.Tables.RECIPES)
     public static class Recipes {
 
-//        @MapColumns public static Map<String, String> mapColumns() {
-//            Map<String, String> map = new HashMap<>();
-//
-//            map.put(RecipeColumns.INGREDIENTS, INGREDIENT_COUNT);
-//            map.put(RecipeColumns.STEPS, STEP_COUNT);
-//
-//            return map;
-//        }
-
         @ContentUri(
                 path = Path.RECIPES,
                 type = Type.RECIPES,
@@ -96,17 +87,6 @@ public class BakingProvider {
                 path = Path.STEPS,
                 type = Type.STEPS)
         public static final Uri CONTENT_URI = buildUri(Path.STEPS);
-
-        @InexactContentUri(
-                path = Path.STEPS + "/#",
-                name = "step_id",
-                type = Type.STEPS,
-                whereColumn = StepColumns.ID,
-                pathSegment = 1
-        )
-        public static Uri stepWithId(int id) {
-            return buildUri(Path.STEPS, String.valueOf(id));
-        }
 
         @InexactContentUri(
                 path = Path.RECIPES + "/#/" + Path.STEPS,

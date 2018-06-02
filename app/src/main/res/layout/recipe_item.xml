@@ -8,6 +8,7 @@
     android:layout_gravity="center"
     android:layout_margin="8dp"
     card_view:cardCornerRadius="8dp"
+    android:foreground="?android:attr/selectableItemBackground"
     tools:showIn="@layout/activity_main">
 
     <LinearLayout
