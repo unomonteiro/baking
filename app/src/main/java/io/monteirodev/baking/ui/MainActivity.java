@@ -1,7 +1,6 @@
 package io.monteirodev.baking.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,10 +25,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.database.BakingProvider;
+import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.sync.SyncUtils;
 import io.monteirodev.baking.utils.NetworkUtils;
-import io.monteirodev.baking.widget.BakingWidget;
 import io.monteirodev.baking.widget.WidgetIntentService;
 import timber.log.Timber;
 
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
                         null,
                         null,
                         null,
-                        null);
+                        RecipeColumns.NAME);
 
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
@@ -131,8 +130,7 @@ public class MainActivity extends AppCompatActivity implements
                     mRecipes = recipes;
                     mRecipeAdapter.setRecipes(mRecipes);
                     showRecipeList();
-                    WidgetIntentService.startActionUpdateSelectedRecipe(this,
-                            INVALID_RECIPE_ID, null);
+                    WidgetIntentService.startActionUpdateSelectedRecipe(this);
                 }
                 break;
             default:
@@ -194,14 +192,11 @@ public class MainActivity extends AppCompatActivity implements
                 .edit()
                 .putInt(RECIPE_ID_KEY, recipeIndex)
                 .apply();
-        WidgetIntentService.startActionUpdateSelectedRecipe(this,
-                recipeIndex,
-                mRecipes.get(recipeIndex).getName());
+        WidgetIntentService.startActionUpdateSelectedRecipe(this);
         Intent intent = new Intent(this, RecipeActivity.class);
         intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE, mRecipes.get(recipeIndex));
         startActivity(intent);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

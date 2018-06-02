@@ -3,12 +3,17 @@ package io.monteirodev.baking.widget;
 import android.app.IntentService;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.preference.PreferenceManager;
 
 import io.monteirodev.baking.R;
+import io.monteirodev.baking.database.BakingProvider;
+import io.monteirodev.baking.models.Recipe;
 
 import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
+import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -20,18 +25,15 @@ import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
 public class WidgetIntentService extends IntentService {
     private static final String ACTION_UPDATE_SELECTED_RECIPE = "io.monteirodev.baking.widget.action.update_selected_recipe";
 
-    private static final String EXTRA_RECIPE_ID = "io.monteirodev.baking.widget.extra.recipe_id";
     private static final String EXTRA_RECIPE_NAME = "io.monteirodev.baking.widget.extra.RECIPE_NAME";
 
     public WidgetIntentService() {
         super("WidgetIntentService");
     }
 
-    public static void startActionUpdateSelectedRecipe(Context context, int recipeId, String recipeName) {
+    public static void startActionUpdateSelectedRecipe(Context context) {
         Intent intent = new Intent(context, WidgetIntentService.class);
         intent.setAction(ACTION_UPDATE_SELECTED_RECIPE);
-        intent.putExtra(EXTRA_RECIPE_ID, recipeId);
-        intent.putExtra(EXTRA_RECIPE_NAME, recipeName);
         context.startService(intent);
     }
 
@@ -40,17 +42,27 @@ public class WidgetIntentService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_UPDATE_SELECTED_RECIPE.equals(action)) {
-                final int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, INVALID_RECIPE_ID);
-                final String recipeName = intent.getStringExtra(EXTRA_RECIPE_NAME);
-                handleActionUpdateSelectedRecipe(recipeId, recipeName);
+                handleActionUpdateSelectedRecipe();
             }
         }
     }
 
-    private void handleActionUpdateSelectedRecipe(int recipeId, String recipeName) {
+    private void handleActionUpdateSelectedRecipe() {
+        String recipeName = null;
+        int recipeId = PreferenceManager.getDefaultSharedPreferences(this).getInt(
+                RECIPE_ID_KEY, INVALID_RECIPE_ID);
+        if (recipeId != INVALID_RECIPE_ID) {
+            Cursor cursor = getContentResolver().query(
+                    BakingProvider.Recipes.withId(recipeId),
+                    null, null, null, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                recipeName = new Recipe(cursor).getName();
+            }
+        }
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, BakingWidget.class));
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list);
-        // BakingWidget.updateAppWidget();
+        BakingWidget.updateBakingWidgets(this, appWidgetManager, appWidgetIds, recipeName);
     }
 }
