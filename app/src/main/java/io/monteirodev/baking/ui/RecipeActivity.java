@@ -38,12 +38,9 @@ public class RecipeActivity extends AppCompatActivity implements
 
     @BindView(R.id.recipe_details_recycler_view)
     RecyclerView mRecyclerView;
-    private int mPosition = RecyclerView.NO_POSITION;
 
-    private LinearLayoutManager mLayoutManager;
     private RecipeDetailsAdapter mRecipeDetailsAdapter;
     private Recipe mRecipe;
-    private int mStepIndex = 0;
     private boolean mIsTablet;
 
     @Override
@@ -69,23 +66,25 @@ public class RecipeActivity extends AppCompatActivity implements
             supportActionBar.setTitle(mRecipe.getName());
         }
 
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecipeDetailsAdapter = new RecipeDetailsAdapter(this);
         mRecyclerView.setAdapter(mRecipeDetailsAdapter);
 
+        int stepIndex = 0;
         if (savedInstanceState == null) {
             getSupportLoaderManager().restartLoader(ID_INGREDIENTS_LOADER, null, this);
             getSupportLoaderManager().restartLoader(ID_STEPS_LOADER, null, this);
             if (mIsTablet) {
-                addStepDetailFragment(mRecipe.getSteps(), mStepIndex);
+                addStepDetailFragment(mRecipe.getSteps(), stepIndex);
             }
         } else {
             mRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
-            mRecipeDetailsAdapter.setIngredients(mRecipe.getIngredients());
-            mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
-            if (mIsTablet) {
-                replaceStepDetailFragment(mRecipe.getSteps(), mStepIndex);
+            if (mRecipe != null) {
+                mRecipeDetailsAdapter.setIngredients(mRecipe.getIngredients());
+                mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
+                if (mIsTablet) {
+                    replaceStepDetailFragment(mRecipe.getSteps(), stepIndex);
+                }
             }
         }
     }

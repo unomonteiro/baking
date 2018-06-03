@@ -7,12 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.C;
@@ -27,7 +25,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
@@ -50,9 +47,6 @@ public class StepDetailFragment extends Fragment {
     private static final String STEP_INDEX_KEY = "step_index_key";
     private static final String PLAYER_POSITION = "player_position";
 
-    private OnStepChangeListener mOnStepChangeListener;
-
-    Unbinder unbinder;
     @BindView(R.id.video_placeholder)
     TextView mThumbnailImageView;
     @BindView(R.id.video_view)
@@ -68,6 +62,8 @@ public class StepDetailFragment extends Fragment {
     private ArrayList<Step> mSteps;
     private int mStepIndex;
 
+    private OnStepChangeListener mOnStepChangeListener;
+    private Unbinder unbinder;
     private SimpleExoPlayer mPlayer;
 
     private long mPlayerPosition;
@@ -90,7 +86,7 @@ public class StepDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
         unbinder = ButterKnife.bind(this, rootView);

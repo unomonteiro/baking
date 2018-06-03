@@ -1,23 +1,20 @@
 <resources>
-    <string name="app_name">Baking Time</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_icon_content_description">App icon</string>
     <string name="app_name_small">Baking</string>
-
-    <string name="oops_check_internet">Oops no wifi, no recipes!</string>
-    <string name="retry">retry</string>
-    <string name="recipe_image">recipe image</string>
-
-    <string name="quantity_measure_ingredient">%1$s&lt;b>%2$s %3$s&lt;/b> %4$s</string>
-    <string name="number_step">%1$d. %2$s</string>
-
-    <string name="video_not_available">Video not available!</string>
-    <string name="previous">Previous</string>
-    <string name="next">Next</string>
-
+    <string name="app_name">Baking Time</string>
     <string name="detail_error_message">Oops, bad recipe!</string>
     <string name="enter_fullscreen">enter fullscreen</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="next">Next</string>
+    <string name="number_step">%1$d. %2$s</string>
+    <string name="oops_check_internet">Oops no wifi, no recipes!</string>
+    <string name="previous">Previous</string>
+    <string name="quantity_measure_ingredient">%1$s&lt;b>%2$s %3$s&lt;/b> %4$s</string>
+    <string name="recipe_image">recipe image</string>
+    <string name="retry">retry</string>
     <string name="tap_for_recipe">Tap me to select a recipe and I\'ll show you the ingredients.</string>
+    <string name="video_not_available">Video not available!</string>
 
 
     <string name="small_cupcake_ipsum" translatable="false">Cupcake ipsum dolor sit amet I love jujubes. Muffin jelly lollipop tiramisu pie caramels. Sugar plum soufflé I love caramels soufflé cupcake jelly-o. Fruitcake dessert bonbon candy I love pastry tootsie roll I love jujubes. Marzipan lemon drops topping. Donut marshmallow sweet. Pie pudding cake soufflé chupa chups.</string>

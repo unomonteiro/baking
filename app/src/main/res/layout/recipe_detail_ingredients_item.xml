@@ -17,7 +17,7 @@
             android:id="@+id/ingredients_title_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ingredients"
+            android:text="@string/ingredients"
             style="@style/Base.TextAppearance.AppCompat.Title"
             tools:text="Ingredients title for 999 people"/>
 

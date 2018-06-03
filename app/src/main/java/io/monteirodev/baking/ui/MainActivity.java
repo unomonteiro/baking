@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements
         return mIdlingResource;
     }
 
-    public void setIdle(boolean idle) {
+    private void setIdle(boolean idle) {
         if (mIdlingResource!= null){
             mIdlingResource.setIdleState(idle);
         }
