@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import io.monteirodev.baking.R;
@@ -16,8 +15,6 @@ import io.monteirodev.baking.ui.MainActivity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
-import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
 
 /**
  * Implementation of App Widget functionality.

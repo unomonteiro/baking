@@ -82,7 +82,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         TextView recipeName;
         @BindView(R.id.recipe_item_image_view)
         ImageView recipeImage;
-        public Recipe recipe;
+        Recipe recipe;
 
         RecipeViewHolder(View itemView) {
             super(itemView);

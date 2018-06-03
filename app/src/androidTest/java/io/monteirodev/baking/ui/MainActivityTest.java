@@ -27,8 +27,6 @@ import static io.monteirodev.baking.TestUtils.matchToolbarTitle;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
-    private String BROWNIES = "Brownies";
-
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
@@ -51,6 +49,7 @@ public class MainActivityTest {
     @Test
     public void clickBrownies_opensRecipeActivityWithBrownies() {
         // to do add dynamic click
+        String BROWNIES = "Brownies";
         onView(withId(R.id.recipes_recycler_view))
                 .perform(RecyclerViewActions.actionOnItem(
                         hasDescendant(withText(BROWNIES)), click()));

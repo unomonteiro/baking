@@ -8,8 +8,6 @@ import com.google.gson.annotations.Expose;
 
 import net.simonvt.schematic.Cursors;
 
-import java.text.DecimalFormat;
-
 import io.monteirodev.baking.database.IngredientColumns;
 
 public class Ingredient implements Parcelable {

@@ -19,7 +19,7 @@ public class BakingDatabase {
     private BakingDatabase() {
     }
 
-    public static final int VERSION = 1;
+    static final int VERSION = 1;
 
     public static class Tables {
         @Table(RecipeColumns.class) @IfNotExists
