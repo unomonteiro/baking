@@ -29,11 +29,7 @@ dependencies {
     implementation 'com.android.support:cardview-v7:27.1.1'
 
     implementation 'com.android.support:support-v4:27.1.1'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
 
     // butterknife
     implementation 'com.jakewharton:butterknife:8.8.1'
@@ -41,6 +37,21 @@ dependencies {
 
     // exoplayer
     implementation 'com.google.android.exoplayer:exoplayer:2.7.3'
+
+    // Expresso tests
+    implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.0', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 
     // firebase
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
@@ -61,7 +72,6 @@ dependencies {
 
     // Timber
     implementation 'com.jakewharton.timber:timber:4.6.0'
-
 }
 
 sourceSets {

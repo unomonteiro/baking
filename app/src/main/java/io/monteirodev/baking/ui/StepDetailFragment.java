@@ -37,6 +37,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.models.Step;
+import timber.log.Timber;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
@@ -174,7 +175,9 @@ public class StepDetailFragment extends Fragment {
 
     @OnClick(R.id.previous_button)
     void previousStep() {
-        mStepIndex --;
+        if (mStepIndex > 0) {
+            mStepIndex--;
+        }
         releasePlayer();
         updateStepViews();
         initializePlayer();
@@ -182,7 +185,12 @@ public class StepDetailFragment extends Fragment {
 
     @OnClick(R.id.next_button)
     void nextStep() {
-        mStepIndex++;
+        Timber.d("step index " + mStepIndex + ", mSteps.size() " + mSteps.size());
+        int maxIndex = mSteps.size() + 1;
+        if (mStepIndex < maxIndex) {
+            mStepIndex++;
+            Timber.d("step index " + mStepIndex);
+        }
         releasePlayer();
         updateStepViews();
         initializePlayer();
@@ -190,7 +198,8 @@ public class StepDetailFragment extends Fragment {
 
     private void updateStepViews() {
         Context context = getContext();
-        if (context != null && mSteps != null && mSteps.size() > 0 && mStepIndex > -1) {
+        if (context != null && mSteps != null && mSteps.size() > 0 &&
+                mStepIndex > -1 && mStepIndex < mSteps.size()) {
             Step step = mSteps.get(mStepIndex);
 
             mVideoURL = step.getVideoURL();
@@ -245,6 +254,8 @@ public class StepDetailFragment extends Fragment {
                 mPlayerView.setVisibility(VISIBLE);
                 mThumbnailImageView.setVisibility(INVISIBLE);
             }
+            mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
+            mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
         }
     }
 

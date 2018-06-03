@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.Snackbar;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.monteirodev.baking.IdlingResource.SimpleIdlingResource;
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
@@ -51,6 +54,24 @@ public class MainActivity extends AppCompatActivity implements
     private Snackbar mSnackbar;
     private ArrayList<Recipe> mRecipes;
 
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
+
+    public void setIdle(boolean idle) {
+        if (mIdlingResource!= null){
+            mIdlingResource.setIdleState(idle);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements
         mRecipeAdapter = new RecipeAdapter(this);
         mRecyclerView.setAdapter(mRecipeAdapter);
         mRecyclerView.setHasFixedSize(true);
+
+        mIdlingResource = (SimpleIdlingResource) getIdlingResource();
+        mIdlingResource.setIdleState(false);
 
         if (savedInstanceState == null || mRecipes == null || mRecipes.size() == 0) {
             showLoading();
@@ -102,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (loaderId) {
             case ID_RECIPE_LOADER:
                 Timber.d("onCreateLoader " + loaderId);
+                setIdle(false);
                 return new CursorLoader(MainActivity.this, BakingProvider.Recipes.CONTENT_URI,
                         null,
                         null,
@@ -110,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements
 
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
-    }
+        }
     }
 
     @Override
@@ -132,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements
                     showRecipeList();
                     WidgetIntentService.startActionUpdateSelectedRecipe(this);
                 }
+                setIdle(true);
                 break;
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);

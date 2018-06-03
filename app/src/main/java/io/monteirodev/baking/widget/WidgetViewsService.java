@@ -16,9 +16,11 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.database.RecipeColumns;
 import io.monteirodev.baking.models.Ingredient;
 import io.monteirodev.baking.models.Recipe;
+import io.monteirodev.baking.utils.RecipeUtils;
 
 import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
 import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
+import static io.monteirodev.baking.utils.RecipeUtils.fromHtml;
 
 public class WidgetViewsService extends RemoteViewsService {
     @Override
@@ -29,10 +31,10 @@ public class WidgetViewsService extends RemoteViewsService {
 
 class WidgetRecipeAdapter implements RemoteViewsService.RemoteViewsFactory {
 
-    Context context;
-    Intent intent;
-    List<Recipe> mRecipes = new ArrayList<>();
-    List<Ingredient> mIngredients = new ArrayList<>();
+    private Context context;
+    private Intent intent;
+    private List<Recipe> mRecipes = new ArrayList<>();
+    private List<String> mIngredients = new ArrayList<>();
     private int mRecipeId;
 
     public WidgetRecipeAdapter(Context context, Intent intent) {
@@ -59,11 +61,15 @@ class WidgetRecipeAdapter implements RemoteViewsService.RemoteViewsFactory {
             Cursor cursor = context.getContentResolver().query(
                     BakingProvider.Ingredients.recipeIngredients(mRecipeId),
                     null, null, null, null);
-            if (cursor != null && cursor.getCount() > 0) {
+            if (cursor != null && cursor.getCount() > 0 && context != null) {
+                List<Ingredient> newIngredientList = new ArrayList<>();
                 cursor.moveToPosition(-1);
                 while (cursor.moveToNext()) {
-                    mIngredients.add(new Ingredient(cursor));
+                    newIngredientList.add(new Ingredient(cursor));
                 }
+                String no_prefix = "";
+                mIngredients = RecipeUtils.getIngredientsString(
+                        context, newIngredientList, no_prefix);
             }
         }
 
@@ -96,13 +102,12 @@ class WidgetRecipeAdapter implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews remoteView = null;
+        RemoteViews remoteView = new RemoteViews(context.getPackageName(),
+                android.R.layout.simple_list_item_1);
         if (mRecipeId == INVALID_RECIPE_ID) {
             if (mRecipes == null || mRecipes.size() == 0) {
                 return null;
             }
-            remoteView = new RemoteViews(context.getPackageName(),
-                    android.R.layout.simple_list_item_1);
             remoteView.setTextViewText(android.R.id.text1, mRecipes.get(position).getName());
             remoteView.setTextColor(android.R.id.text1, Color.BLACK);
 
@@ -113,14 +118,12 @@ class WidgetRecipeAdapter implements RemoteViewsService.RemoteViewsFactory {
             remoteView.setOnClickFillInIntent(android.R.id.text1, fillInIntent);
 
         } else {
-            if (mIngredients == null || mIngredients.size() == 0) {
+            if (mIngredients == null || mIngredients.size() == 0 || context == null) {
                 return null;
             }
-            remoteView = new RemoteViews(context.getPackageName(),
-                    android.R.layout.simple_list_item_1);
-            remoteView.setTextViewText(android.R.id.text1,
-                    "- " + mIngredients.get(position).getQuantity() + " " + mIngredients.get(position).getMeasure()  + " " + mIngredients.get(position).getIngredient());
+            remoteView.setTextViewText(android.R.id.text1, fromHtml(mIngredients.get(position)));
             remoteView.setTextColor(android.R.id.text1, Color.BLACK);
+            remoteView.setOnClickFillInIntent(android.R.id.text1, new Intent());
         }
         return remoteView;
     }
