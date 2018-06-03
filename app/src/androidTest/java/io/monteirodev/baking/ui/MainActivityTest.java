@@ -2,7 +2,6 @@ package io.monteirodev.baking.ui;
 
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -28,9 +27,10 @@ import static io.monteirodev.baking.TestUtils.matchToolbarTitle;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
+    private String BROWNIES = "Brownies";
+
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
-
 
     /** <a href="https://stackoverflow.com/a/27669809/6997703">
      *  How to click on an item inside a RecyclerView in Espresso
@@ -51,7 +51,6 @@ public class MainActivityTest {
     @Test
     public void clickBrownies_opensRecipeActivityWithBrownies() {
         // to do add dynamic click
-        String BROWNIES = "Brownies";
         onView(withId(R.id.recipes_recycler_view))
                 .perform(RecyclerViewActions.actionOnItem(
                         hasDescendant(withText(BROWNIES)), click()));
