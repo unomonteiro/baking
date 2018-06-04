@@ -96,11 +96,6 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 Step step = mSteps.get(adjustedPosition);
                 String thumbnailURL = step.getThumbnailURL();
-                // for image testing in odd position
-                // if (position == 1) {
-                    // thumbnailURL = "http://www.brickcitybears.com/wp-content/uploads/2018/04/2527-best-squirrels-images-on-pinterest.jpg";
-                    // thumbnailURL = "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg";
-                // }
                 if (thumbnailURL.isEmpty()) {
                     stepViewHolder.mStepThumbnail.setVisibility(View.GONE);
                 } else if (context != null){

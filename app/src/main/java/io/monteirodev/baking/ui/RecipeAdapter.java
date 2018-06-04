@@ -40,11 +40,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.itemView.setTag(holder.recipe.getId());
         holder.recipeName.setText(holder.recipe.getName());
         String imageUrl = holder.recipe.getImage();
-        // for image testing
-//        if (position == 1) {
-//            //imageUrl = "http://www.brickcitybears.com/wp-content/uploads/2018/04/2527-best-squirrels-images-on-pinterest.jpg";
-//            imageUrl = "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg";
-//        }
         if (imageUrl.isEmpty()) {
             holder.recipeImage.setVisibility(View.GONE);
         } else {

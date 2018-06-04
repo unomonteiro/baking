@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements
     @BindView(R.id.loading_view)
     View mLoadingView;
 
-    LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
 
     private Snackbar mSnackbar;

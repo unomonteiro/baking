@@ -35,12 +35,10 @@ public class BakingWidget extends AppWidgetProvider {
         views.setTextViewText(R.id.widget_title_text, title);
         views.setOnClickPendingIntent(R.id.widget_title_layout, appPendingIntent);
         views.setOnClickPendingIntent(R.id.widget_layout_main, appPendingIntent);
-        //views.setOnClickPendingIntent(R.id.widget_list, appPendingIntent);
         views.setViewVisibility(R.id.widget_invalid_recipe_text, GONE);
         views.setViewVisibility(R.id.widget_list, VISIBLE);
 
-
-        // Add the wateringservice click handler
+        // Add the click handler
         Intent selectIntent = new Intent(context, WidgetIntentService.class);
         selectIntent.setAction(WidgetIntentService.ACTION_UPDATE_SELECTED_RECIPE);
         PendingIntent selectPendingIntent = PendingIntent.getService(context, 0, selectIntent, PendingIntent.FLAG_UPDATE_CURRENT);

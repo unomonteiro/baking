@@ -15,13 +15,6 @@ import io.monteirodev.baking.models.Recipe;
 import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
 import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
 public class WidgetIntentService extends IntentService {
     static final String ACTION_UPDATE_SELECTED_RECIPE = "io.monteirodev.baking.widget.action.update_selected_recipe";
 
