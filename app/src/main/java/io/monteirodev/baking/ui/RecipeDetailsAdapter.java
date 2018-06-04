@@ -96,12 +96,11 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 Step step = mSteps.get(adjustedPosition);
                 String thumbnailURL = step.getThumbnailURL();
-                if (thumbnailURL.isEmpty()) {
-                    stepViewHolder.mStepThumbnail.setVisibility(View.GONE);
-                } else if (context != null){
+                if (!thumbnailURL.isEmpty()) {
                     Picasso.with(stepViewHolder.mStepThumbnail.getContext())
                             .load(thumbnailURL)
-                            .error(R.drawable.ic_broken_image_48px)
+                            .placeholder(R.drawable.ic_image_48)
+                            .error(R.drawable.ic_broken_image_48)
                             .into(stepViewHolder.mStepThumbnail);
                 }
                 int stepOrder = step.getId();
