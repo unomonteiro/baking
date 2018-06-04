@@ -8,7 +8,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -92,6 +95,20 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
                 stepViewHolder.itemView.setTag(adjustedPosition);
 
                 Step step = mSteps.get(adjustedPosition);
+                String thumbnailURL = step.getThumbnailURL();
+                // for image testing in odd position
+                // if (position == 1) {
+                    // thumbnailURL = "http://www.brickcitybears.com/wp-content/uploads/2018/04/2527-best-squirrels-images-on-pinterest.jpg";
+                    // thumbnailURL = "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg";
+                // }
+                if (thumbnailURL.isEmpty()) {
+                    stepViewHolder.mStepThumbnail.setVisibility(View.GONE);
+                } else if (context != null){
+                    Picasso.with(stepViewHolder.mStepThumbnail.getContext())
+                            .load(thumbnailURL)
+                            .error(R.drawable.ic_broken_image_48px)
+                            .into(stepViewHolder.mStepThumbnail);
+                }
                 int stepOrder = step.getId();
                 String shortDescription = step.getShortDescription();
                 String stepText = shortDescription;
@@ -160,7 +177,6 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
     class IngredientsViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ingredients_title_text_view)
         TextView mIngredientsTitleTextView;
-
         @BindView(R.id.ingredient_list_text_view)
         TextView mIngredientListTextView;
 
@@ -171,6 +187,8 @@ public class RecipeDetailsAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     class StepViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.recipe_step_thumbnail)
+        ImageView mStepThumbnail;
         @BindView(R.id.recipe_step_text_view)
         TextView mStepTextView;
 
