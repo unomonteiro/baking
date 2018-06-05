@@ -2,6 +2,7 @@ package io.monteirodev.baking.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -12,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,7 +27,11 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.models.Ingredient;
 import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.models.Step;
+import io.monteirodev.baking.widget.WidgetIntentService;
 import timber.log.Timber;
+
+import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
+import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
 
 public class RecipeActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, RecipeDetailsAdapter.StepClickListener,
@@ -91,6 +99,35 @@ public class RecipeActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.recipe_menu, menu);
+        MenuItem item = menu.findItem(R.id.action_favourite);
+        item.setIcon(isFavourite() ? R.drawable.ic_heart : R.drawable.ic_heart_outline);
+        return true;
+    }
+
+    private boolean isFavourite() {
+        int recipeId = PreferenceManager.getDefaultSharedPreferences(this)
+                .getInt(RECIPE_ID_KEY, INVALID_RECIPE_ID);
+        return mRecipe.getId() == recipeId;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_favourite) {
+            int newRecipeId = isFavourite() ? INVALID_RECIPE_ID : mRecipe.getId();
+            PreferenceManager.getDefaultSharedPreferences(this)
+                    .edit()
+                    .putInt(RECIPE_ID_KEY, newRecipeId)
+                    .apply();
+            WidgetIntentService.startActionUpdateSelectedRecipe(this);
+            item.setIcon(isFavourite() ? R.drawable.ic_heart : R.drawable.ic_heart_outline);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
