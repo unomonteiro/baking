@@ -30,6 +30,7 @@ public class RecipeActivity extends AppCompatActivity implements
         StepDetailFragment.OnStepChangeListener {
 
     private static final String RECIPE_KEY = "recipe_key";
+    private static final String STEP_DETAIL_FRAGMENT_KEY = "STEP_DETAIL_FRAGMENT_KEY";
     private static final int ID_INGREDIENTS_LOADER = 2;
     private static final int ID_STEPS_LOADER = 3;
 
@@ -42,6 +43,7 @@ public class RecipeActivity extends AppCompatActivity implements
     private RecipeDetailsAdapter mRecipeDetailsAdapter;
     private Recipe mRecipe;
     private boolean mIsTablet;
+    private StepDetailFragment mStepDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +77,7 @@ public class RecipeActivity extends AppCompatActivity implements
             getSupportLoaderManager().restartLoader(ID_INGREDIENTS_LOADER, null, this);
             getSupportLoaderManager().restartLoader(ID_STEPS_LOADER, null, this);
             if (mIsTablet) {
-                addStepDetailFragment(mRecipe.getSteps(), stepIndex);
+                setStepDetailFragment(mRecipe.getSteps(), stepIndex);
             }
         } else {
             mRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
@@ -83,27 +85,24 @@ public class RecipeActivity extends AppCompatActivity implements
                 mRecipeDetailsAdapter.setIngredients(mRecipe.getIngredients());
                 mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
                 if (mIsTablet) {
+                    mStepDetailFragment = (StepDetailFragment) getSupportFragmentManager()
+                            .getFragment(savedInstanceState, STEP_DETAIL_FRAGMENT_KEY);
                     replaceStepDetailFragment(mRecipe.getSteps(), stepIndex);
                 }
             }
         }
     }
 
-    private void addStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
-        StepDetailFragment stepDetailFragment = new StepDetailFragment();
-        stepDetailFragment.setSteps(steps);
-        stepDetailFragment.setStepIndex(stepIndex);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.step_container, stepDetailFragment)
-                .commit();
+    private void setStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
+        mStepDetailFragment = new StepDetailFragment();
+        replaceStepDetailFragment(steps, stepIndex);
     }
 
     private void replaceStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
-        StepDetailFragment stepDetailFragment = new StepDetailFragment();
-        stepDetailFragment.setSteps(steps);
-        stepDetailFragment.setStepIndex(stepIndex);
+        mStepDetailFragment.setSteps(steps);
+        mStepDetailFragment.setStepIndex(stepIndex);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.step_container, stepDetailFragment)
+                .replace(R.id.step_container, mStepDetailFragment)
                 .commit();
     }
 
@@ -152,7 +151,7 @@ public class RecipeActivity extends AppCompatActivity implements
                         mRecipe.setSteps(steps);
                         mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
                         if (mIsTablet) {
-                            replaceStepDetailFragment(mRecipe.getSteps(), 0);
+                            setStepDetailFragment(mRecipe.getSteps(), 0);
                         }
                     }
                     break;
@@ -179,7 +178,7 @@ public class RecipeActivity extends AppCompatActivity implements
     @Override
     public void onStepClick(int stepIndex) {
         if (mIsTablet) {
-            replaceStepDetailFragment(mRecipe.getSteps(), stepIndex);
+            setStepDetailFragment(mRecipe.getSteps(), stepIndex);
         } else {
             Intent intent = new Intent(this, StepDetailActivity.class);
             intent.putExtra(INTENT_EXTRA_RECIPE, mRecipe);
@@ -197,5 +196,9 @@ public class RecipeActivity extends AppCompatActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(RECIPE_KEY, mRecipe);
+        if (mIsTablet) {
+            getSupportFragmentManager().putFragment(
+                    outState, STEP_DETAIL_FRAGMENT_KEY, mStepDetailFragment);
+        }
     }
 }
