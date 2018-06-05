@@ -13,6 +13,7 @@ import android.widget.RemoteViews;
 import io.monteirodev.baking.R;
 import io.monteirodev.baking.ui.MainActivity;
 
+import static android.text.TextUtils.isEmpty;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -29,7 +30,7 @@ public class BakingWidget extends AppWidgetProvider {
         Intent appIntent = new Intent(context, MainActivity.class);
         PendingIntent appPendingIntent = PendingIntent.getActivity(context, 0, appIntent, 0);
         String title = context.getString(R.string.app_name_small);
-        if (recipeName != null && !recipeName.isEmpty()) {
+        if (!isEmpty(recipeName)) {
             title = recipeName;
         }
         views.setTextViewText(R.id.widget_title_text, title);

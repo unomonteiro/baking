@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ import timber.log.Timber;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+import static android.text.TextUtils.isEmpty;
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
@@ -264,7 +266,7 @@ public class StepDetailFragment extends Fragment {
     }
 
     private void initializePlayer() {
-        if (mPlayer == null && mVideoURL != null && !mVideoURL.isEmpty()) {
+        if (mPlayer == null && !isEmpty(mVideoURL)) {
             mPlayer = ExoPlayerFactory.newSimpleInstance(
                     new DefaultRenderersFactory(getContext()),
                     new DefaultTrackSelector(
