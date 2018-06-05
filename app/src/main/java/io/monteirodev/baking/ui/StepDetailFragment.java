@@ -50,7 +50,7 @@ public class StepDetailFragment extends Fragment {
     private static final String PLAYER_POSITION = "player_position";
 
     @BindView(R.id.video_placeholder)
-    TextView mThumbnailImageView;
+    TextView mEmptyVideoView;
     @BindView(R.id.video_view)
     PlayerView mPlayerView;
     @BindView(R.id.short_description_text_view)
@@ -228,7 +228,7 @@ public class StepDetailFragment extends Fragment {
         int orientation = resources.getConfiguration().orientation;
 
         if (isTablet) {
-            mThumbnailImageView.setVisibility(mVideoURL.isEmpty() ? VISIBLE : INVISIBLE);
+            mEmptyVideoView.setVisibility(mVideoURL.isEmpty() ? VISIBLE : INVISIBLE);
             mPlayerView.setVisibility(mVideoURL.isEmpty() ? INVISIBLE : VISIBLE);
             mShortDescriptionTextView.setVisibility(GONE);
             mPreviousButton.setVisibility(GONE);
@@ -236,14 +236,14 @@ public class StepDetailFragment extends Fragment {
         } else if (orientation == ORIENTATION_LANDSCAPE) {
             if (mVideoURL.isEmpty()) {
                 mPlayerView.setVisibility(GONE);
-                mThumbnailImageView.setVisibility(GONE);
+                mEmptyVideoView.setVisibility(GONE);
                 mShortDescriptionTextView.setVisibility(VISIBLE);
                 mDescriptionContainer.setVisibility(showDescription ? INVISIBLE : VISIBLE);
                 mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
                 mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
             } else {
                 mPlayerView.setVisibility(View.VISIBLE);
-                mThumbnailImageView.setVisibility(GONE);
+                mEmptyVideoView.setVisibility(GONE);
                 mShortDescriptionTextView.setVisibility(GONE);
                 mDescriptionContainer.setVisibility(GONE);
                 mPreviousButton.setVisibility(GONE);
@@ -253,10 +253,10 @@ public class StepDetailFragment extends Fragment {
         } else if (orientation == ORIENTATION_PORTRAIT) {
             if (mVideoURL.isEmpty()) {
                 mPlayerView.setVisibility(INVISIBLE);
-                mThumbnailImageView.setVisibility(VISIBLE);
+                mEmptyVideoView.setVisibility(VISIBLE);
             } else {
                 mPlayerView.setVisibility(VISIBLE);
-                mThumbnailImageView.setVisibility(INVISIBLE);
+                mEmptyVideoView.setVisibility(INVISIBLE);
             }
             mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
             mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
