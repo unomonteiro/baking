@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.C;
@@ -45,6 +46,7 @@ import static android.view.View.VISIBLE;
 public class StepDetailFragment extends Fragment {
     private static final String STEPS_KEY = "steps_key";
     private static final String STEP_INDEX_KEY = "step_index_key";
+    private static final String PLAY_STATE = "play_state";
     private static final String PLAYER_POSITION = "player_position";
 
     @BindView(R.id.video_placeholder)
@@ -53,6 +55,8 @@ public class StepDetailFragment extends Fragment {
     PlayerView mPlayerView;
     @BindView(R.id.short_description_text_view)
     TextView mShortDescriptionTextView;
+    @BindView(R.id.scrollView)
+    ScrollView mDescriptionContainer;
     @BindView(R.id.description_text_view)
     TextView mDescriptionTextView;
     @BindView(R.id.previous_button)
@@ -67,7 +71,7 @@ public class StepDetailFragment extends Fragment {
     private SimpleExoPlayer mPlayer;
 
     private long mPlayerPosition;
-    private boolean playWhenReady = true;
+    private boolean isPlayWhenReady;
     private String mVideoURL;
 
     public StepDetailFragment() {
@@ -94,8 +98,10 @@ public class StepDetailFragment extends Fragment {
             mSteps = savedInstanceState.getParcelableArrayList(STEPS_KEY);
             mStepIndex = savedInstanceState.getInt(STEP_INDEX_KEY);
             mPlayerPosition = savedInstanceState.getLong(PLAYER_POSITION, C.TIME_UNSET);
+            isPlayWhenReady = savedInstanceState.getBoolean(PLAY_STATE, true);
         } else {
             mPlayerPosition = C.TIME_UNSET;
+            isPlayWhenReady = true;
         }
         updateStepViews();
         return rootView;
@@ -114,7 +120,7 @@ public class StepDetailFragment extends Fragment {
             if (mPlayerPosition != C.TIME_UNSET) {
                 mPlayer.seekTo(mPlayerPosition);
             }
-            mPlayer.setPlayWhenReady(true);
+            mPlayer.setPlayWhenReady(isPlayWhenReady);
         }
     }
 
@@ -122,22 +128,24 @@ public class StepDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (mPlayer != null) {
+            isPlayWhenReady = mPlayer.getPlayWhenReady();
             mPlayerPosition = mPlayer.getCurrentPosition();
             releasePlayer();
         }
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelableArrayList(STEPS_KEY, mSteps);
-        outState.putInt(STEP_INDEX_KEY, mStepIndex);
-        outState.putLong(PLAYER_POSITION, mPlayerPosition);
-    }
-
-    @Override
     public void onStop() {
         super.onStop();
         releasePlayer();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList(STEPS_KEY, mSteps);
+        outState.putInt(STEP_INDEX_KEY, mStepIndex);
+        outState.putBoolean(PLAY_STATE, isPlayWhenReady);
+        outState.putLong(PLAYER_POSITION, mPlayerPosition);
     }
 
     @Override
@@ -230,14 +238,14 @@ public class StepDetailFragment extends Fragment {
                 mPlayerView.setVisibility(GONE);
                 mThumbnailImageView.setVisibility(GONE);
                 mShortDescriptionTextView.setVisibility(VISIBLE);
-                mDescriptionTextView.setVisibility(showDescription ? INVISIBLE : VISIBLE);
+                mDescriptionContainer.setVisibility(showDescription ? INVISIBLE : VISIBLE);
                 mPreviousButton.setVisibility(isFirstStep ? INVISIBLE : VISIBLE);
                 mNextButton.setVisibility(isLastStep ? INVISIBLE : VISIBLE);
             } else {
                 mPlayerView.setVisibility(View.VISIBLE);
                 mThumbnailImageView.setVisibility(GONE);
                 mShortDescriptionTextView.setVisibility(GONE);
-                mDescriptionTextView.setVisibility(GONE);
+                mDescriptionContainer.setVisibility(GONE);
                 mPreviousButton.setVisibility(GONE);
                 mNextButton.setVisibility(GONE);
                 hideSystemUi();
@@ -256,11 +264,6 @@ public class StepDetailFragment extends Fragment {
     }
 
     private void initializePlayer() {
-//        if (mVideoURL == null || mVideoURL.isEmpty()) {
-//            mThumbnailImageView.setVisibility(VISIBLE);
-//            mPlayerView.setVisibility(INVISIBLE);
-//            return;
-//        }
         if (mPlayer == null && mVideoURL != null && !mVideoURL.isEmpty()) {
             mPlayer = ExoPlayerFactory.newSimpleInstance(
                     new DefaultRenderersFactory(getContext()),
@@ -270,7 +273,7 @@ public class StepDetailFragment extends Fragment {
                     new DefaultLoadControl());
             mPlayerView.requestFocus();
             mPlayerView.setPlayer(mPlayer);
-            mPlayer.setPlayWhenReady(playWhenReady);
+            mPlayer.setPlayWhenReady(isPlayWhenReady);
             MediaSource mediaSource = buildMediaSource(Uri.parse(mVideoURL));
             mPlayer.prepare(mediaSource);
         }
@@ -294,7 +297,7 @@ public class StepDetailFragment extends Fragment {
 
     private void releasePlayer() {
         if (mPlayer != null) {
-            playWhenReady = mPlayer.getPlayWhenReady();
+            mPlayer.stop();
             mPlayer.release();
             mPlayer = null;
         }

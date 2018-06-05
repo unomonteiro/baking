@@ -5,6 +5,7 @@
     <string name="app_name">Baking Time</string>
     <string name="detail_error_message">Oops, bad recipe!</string>
     <string name="enter_fullscreen">enter fullscreen</string>
+    <string name="favourite">favourite</string>
     <string name="ingredients">Ingredients</string>
     <string name="next">Next</string>
     <string name="number_step">%1$d. %2$s</string>
@@ -12,6 +13,7 @@
     <string name="previous">Previous</string>
     <string name="quantity_measure_ingredient">%1$s&lt;b>%2$s %3$s&lt;/b> %4$s</string>
     <string name="recipe_image">recipe image</string>
+    <string name="recipe_thumbnail_description">recipe thumbnail</string>
     <string name="retry">retry</string>
     <string name="tap_for_recipe">Tap me to select a recipe and I\'ll show you the ingredients.</string>
     <string name="video_not_available">Video not available!</string>

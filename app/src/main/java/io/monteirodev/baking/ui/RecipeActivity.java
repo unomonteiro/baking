@@ -2,6 +2,7 @@ package io.monteirodev.baking.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -12,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,13 +27,18 @@ import io.monteirodev.baking.database.BakingProvider;
 import io.monteirodev.baking.models.Ingredient;
 import io.monteirodev.baking.models.Recipe;
 import io.monteirodev.baking.models.Step;
+import io.monteirodev.baking.widget.WidgetIntentService;
 import timber.log.Timber;
+
+import static io.monteirodev.baking.ui.MainActivity.INVALID_RECIPE_ID;
+import static io.monteirodev.baking.ui.MainActivity.RECIPE_ID_KEY;
 
 public class RecipeActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, RecipeDetailsAdapter.StepClickListener,
         StepDetailFragment.OnStepChangeListener {
 
     private static final String RECIPE_KEY = "recipe_key";
+    private static final String STEP_DETAIL_FRAGMENT_KEY = "STEP_DETAIL_FRAGMENT_KEY";
     private static final int ID_INGREDIENTS_LOADER = 2;
     private static final int ID_STEPS_LOADER = 3;
 
@@ -42,6 +51,7 @@ public class RecipeActivity extends AppCompatActivity implements
     private RecipeDetailsAdapter mRecipeDetailsAdapter;
     private Recipe mRecipe;
     private boolean mIsTablet;
+    private StepDetailFragment mStepDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +85,7 @@ public class RecipeActivity extends AppCompatActivity implements
             getSupportLoaderManager().restartLoader(ID_INGREDIENTS_LOADER, null, this);
             getSupportLoaderManager().restartLoader(ID_STEPS_LOADER, null, this);
             if (mIsTablet) {
-                addStepDetailFragment(mRecipe.getSteps(), stepIndex);
+                setStepDetailFragment(mRecipe.getSteps(), stepIndex);
             }
         } else {
             mRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
@@ -83,27 +93,53 @@ public class RecipeActivity extends AppCompatActivity implements
                 mRecipeDetailsAdapter.setIngredients(mRecipe.getIngredients());
                 mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
                 if (mIsTablet) {
+                    mStepDetailFragment = (StepDetailFragment) getSupportFragmentManager()
+                            .getFragment(savedInstanceState, STEP_DETAIL_FRAGMENT_KEY);
                     replaceStepDetailFragment(mRecipe.getSteps(), stepIndex);
                 }
             }
         }
     }
 
-    private void addStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
-        StepDetailFragment stepDetailFragment = new StepDetailFragment();
-        stepDetailFragment.setSteps(steps);
-        stepDetailFragment.setStepIndex(stepIndex);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.step_container, stepDetailFragment)
-                .commit();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.recipe_menu, menu);
+        MenuItem item = menu.findItem(R.id.action_favourite);
+        item.setIcon(isFavourite() ? R.drawable.ic_heart : R.drawable.ic_heart_outline);
+        return true;
+    }
+
+    private boolean isFavourite() {
+        int recipeId = PreferenceManager.getDefaultSharedPreferences(this)
+                .getInt(RECIPE_ID_KEY, INVALID_RECIPE_ID);
+        return mRecipe.getId() == recipeId;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_favourite) {
+            int newRecipeId = isFavourite() ? INVALID_RECIPE_ID : mRecipe.getId();
+            PreferenceManager.getDefaultSharedPreferences(this)
+                    .edit()
+                    .putInt(RECIPE_ID_KEY, newRecipeId)
+                    .apply();
+            WidgetIntentService.startActionUpdateSelectedRecipe(this);
+            item.setIcon(isFavourite() ? R.drawable.ic_heart : R.drawable.ic_heart_outline);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
+        mStepDetailFragment = new StepDetailFragment();
+        replaceStepDetailFragment(steps, stepIndex);
     }
 
     private void replaceStepDetailFragment(ArrayList<Step> steps, int stepIndex) {
-        StepDetailFragment stepDetailFragment = new StepDetailFragment();
-        stepDetailFragment.setSteps(steps);
-        stepDetailFragment.setStepIndex(stepIndex);
+        mStepDetailFragment.setSteps(steps);
+        mStepDetailFragment.setStepIndex(stepIndex);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.step_container, stepDetailFragment)
+                .replace(R.id.step_container, mStepDetailFragment)
                 .commit();
     }
 
@@ -152,7 +188,7 @@ public class RecipeActivity extends AppCompatActivity implements
                         mRecipe.setSteps(steps);
                         mRecipeDetailsAdapter.setSteps(mRecipe.getSteps());
                         if (mIsTablet) {
-                            replaceStepDetailFragment(mRecipe.getSteps(), 0);
+                            setStepDetailFragment(mRecipe.getSteps(), 0);
                         }
                     }
                     break;
@@ -179,7 +215,7 @@ public class RecipeActivity extends AppCompatActivity implements
     @Override
     public void onStepClick(int stepIndex) {
         if (mIsTablet) {
-            replaceStepDetailFragment(mRecipe.getSteps(), stepIndex);
+            setStepDetailFragment(mRecipe.getSteps(), stepIndex);
         } else {
             Intent intent = new Intent(this, StepDetailActivity.class);
             intent.putExtra(INTENT_EXTRA_RECIPE, mRecipe);
@@ -197,5 +233,9 @@ public class RecipeActivity extends AppCompatActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(RECIPE_KEY, mRecipe);
+        if (mIsTablet) {
+            getSupportFragmentManager().putFragment(
+                    outState, STEP_DETAIL_FRAGMENT_KEY, mStepDetailFragment);
+        }
     }
 }

@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements
     @BindView(R.id.loading_view)
     View mLoadingView;
 
-    LinearLayoutManager mLayoutManager;
     private RecipeAdapter mRecipeAdapter;
 
     private Snackbar mSnackbar;
@@ -155,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements
                     mRecipes = recipes;
                     mRecipeAdapter.setRecipes(mRecipes);
                     showRecipeList();
-                    WidgetIntentService.startActionUpdateSelectedRecipe(this);
                 }
                 setIdle(true);
                 break;
@@ -213,12 +211,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onRecipeClick(Recipe recipe) {
-        Timber.d( "onRecipeClick: " + recipe);
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .edit()
-                .putInt(RECIPE_ID_KEY, recipe.getId())
-                .apply();
-        WidgetIntentService.startActionUpdateSelectedRecipe(this);
         Intent intent = new Intent(this, RecipeActivity.class);
         intent.putExtra(RecipeActivity.INTENT_EXTRA_RECIPE, recipe);
         startActivity(intent);
